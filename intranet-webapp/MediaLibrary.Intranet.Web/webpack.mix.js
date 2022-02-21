@@ -18,6 +18,7 @@ mix.sourceMaps(false) // enable source maps in dev mode, but not prod
 mix
   .js('assets/scripts/site.js', 'scripts')
   .js('assets/scripts/item.js', 'scripts')
+  .js('assets/scripts/edit.js', 'scripts')
   .js('assets/scripts/search.js', 'scripts')
   .js('assets/scripts/map.js', 'scripts')
   .sass('assets/styles/site.scss', 'styles')

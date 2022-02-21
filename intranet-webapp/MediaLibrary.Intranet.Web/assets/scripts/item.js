@@ -1,6 +1,7 @@
 function loadFileInfo() {
   const img = document.querySelector('#main-media')
   const fileInfoId = img.dataset.fileinfoid
+
   if (!fileInfoId) return
 
   fetch(`/api/media/${fileInfoId}`, {
@@ -15,6 +16,7 @@ function loadFileInfo() {
       if (!contentType || !contentType.includes('application/json')) {
         throw new TypeError("Oops, we haven't got JSON!")
       }
+
       return response.json()
     })
     .then((data) => {
