@@ -104,3 +104,9 @@ a.navbar-brand {
     color: #fff;
   }
 }
+
+.required::after {
+    content: "*";
+    font-weight: bold;
+    color: red;
+}
