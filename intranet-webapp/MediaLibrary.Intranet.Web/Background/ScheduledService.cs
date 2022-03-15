@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -155,41 +156,7 @@ namespace MediaLibrary.Intranet.Web.Background
             }
 
             _logger.LogInformation("Finished background processing");
-        }
-        
-        public async Task Update(string id)
-        {
-            _logger.LogInformation("Starting background processing");
-
-            string storageConnectionString = _appSettings.MediaStorageConnectionString;
-            string storageAccountName = _appSettings.MediaStorageAccountName;
-            string imageContainerName = _appSettings.MediaStorageImageContainer;
-            string indexContainerName = _appSettings.MediaStorageIndexContainer;
-
-            // Initialize blob container clients
-            BlobContainerClient imageBlobContainerClient;
-            BlobContainerClient indexBlobContainerClient;
-
-            if (!string.IsNullOrEmpty(storageConnectionString))
-            {
-                imageBlobContainerClient = new BlobContainerClient(storageConnectionString, imageContainerName);
-                indexBlobContainerClient = new BlobContainerClient(storageConnectionString, indexContainerName);
-            }
-            else
-            {
-                string imageContainerEndpoint = string.Format("https://{0}.blob.core.windows.net/{1}",
-                    storageAccountName, imageContainerName);
-                imageBlobContainerClient = new BlobContainerClient(new Uri(imageContainerEndpoint), new DefaultAzureCredential());
-
-                string indexContainerEndpoint = string.Format("https://{0}.blob.core.windows.net/{1}",
-                    storageAccountName, indexContainerName);
-                indexBlobContainerClient = new BlobContainerClient(new Uri(indexContainerEndpoint), new DefaultAzureCredential());
-            }
-
-            //upload to indexer blob
-            string indexFileName = id + ".json";
-            await UpdateBlob(indexBlobContainerClient, mediaItem, indexFileName);
-        }
+        }    
         
         private async Task DeleteInternetTableItem(InternetTableItems item)
         {
@@ -289,24 +256,6 @@ namespace MediaLibrary.Intranet.Web.Background
             await blobClient.UploadAsync(stream, blobUploadOptions);
         }
         
-        private static async Task UpdateBlob(BlobContainerClient blobContainerClient, JsonResult mediaItem, string fileName)
-        {
-            //convert string to stream
-            var stream = new MemoryStream();
-            JsonHelper.WriteJsonToStream(mediaItem, stream);
-
-            //create a blob
-            var blobClient = blobContainerClient.GetBlobClient(fileName);
-            var blobUploadOptions = new BlobUploadOptions
-            {
-                HttpHeaders = new BlobHttpHeaders
-                {
-                    ContentType = "application/json"
-                }
-            };
-
-            await blobClient.UploadAsync(stream, blobUploadOptions);
-        }
         
     }
 }
