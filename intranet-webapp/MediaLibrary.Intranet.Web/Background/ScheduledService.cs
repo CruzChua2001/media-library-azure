@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -12,6 +13,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using MediaLibrary.Intranet.Web.Common;
 using MediaLibrary.Intranet.Web.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -156,8 +158,8 @@ namespace MediaLibrary.Intranet.Web.Background
             }
 
             _logger.LogInformation("Finished background processing");
-        }
-
+        }    
+        
         private async Task DeleteInternetTableItem(InternetTableItems item)
         {
             var request = new HttpRequestMessage(HttpMethod.Delete, $"api/v1/transfer/mediaItems/{item.id}");
@@ -255,5 +257,7 @@ namespace MediaLibrary.Intranet.Web.Background
 
             await blobClient.UploadAsync(stream, blobUploadOptions);
         }
+        
+        
     }
 }
