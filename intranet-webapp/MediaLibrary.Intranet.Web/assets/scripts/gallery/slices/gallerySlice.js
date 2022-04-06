@@ -258,7 +258,7 @@ const updateLocalStorage = async (email, currArr) => {
 const updateDisplayName = (data) => {
   for (let i = 0; i <= data.length; i++) {
     if (data[i] == null || data[i] == undefined) { continue }
-    let currentDetail = data[i]["author"]
+    const currentDetail = data[i]["author"]
     if (currentDetail != null && currentDetail != undefined) {
       const displayName = localStorage.getItem(currentDetail)
       data[i]["author"] = displayName
