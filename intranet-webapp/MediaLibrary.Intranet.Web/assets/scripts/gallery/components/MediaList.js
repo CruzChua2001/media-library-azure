@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 
-import { formatShortDate } from '@/../format'
+import { formatShortDate, formatDisplayName } from '@/../format'
 
 const ThumbnailLink = styled.a`
   width: 30%;
@@ -36,7 +36,7 @@ const MediaList = ({ results }) => {
             </div>
             {/*right div*/}
             <div className="text-right w-50">
-              Uploaded {formatShortDate(result.uploadDate)}<br />{result.author}
+              Uploaded {formatShortDate(result.uploadDate)}<br />{ result.author }
             </div>
           </div>
         </div>
