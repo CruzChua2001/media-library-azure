@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Azure.Identity;
 using MediaLibrary.Intranet.Web.Common;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -56,6 +57,7 @@ namespace MediaLibrary.Intranet.Web.Configuration
                 .AddMicrosoftGraph(options =>
                 {
                     options.Scopes = string.Join(' ', DefaultGraphScopes);
+
                 })
                 // Use in-memory token cache
                 // See https://github.com/AzureAD/microsoft-identity-web/wiki/token-cache-serialization
