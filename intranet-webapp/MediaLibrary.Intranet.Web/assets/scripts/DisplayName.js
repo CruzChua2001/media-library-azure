@@ -35,7 +35,13 @@ async function setLocalStorageName(email) {
   if (email == "") {
     return
   }
-  await fetch(`/api/account/${email}`, {
+  const baseUrl = location
+  const url = new URL('/api/account', baseUrl)
+  const params = {
+    emails: email
+  }
+  url.search = new URLSearchParams(params)
+  await fetch(url, {
     mode: 'same-origin',
     credentials: 'same-origin',
   })
@@ -46,11 +52,10 @@ async function setLocalStorageName(email) {
       return response.json()
     })
     .then((data) => {
-      for (let i in data) {
-        const mail = data[i]["Mail"]
-        const displayName = data[i]["DisplayName"]
-        localStorage.setItem(mail, displayName)
-      }
+        console.log(data.Items)
+        //const mail = data[i]["Mail"]
+        //const displayName = data[i]["DisplayName"]
+        //localStorage.setItem(mail, displayName)
     })
     .catch((error) => {
       console.error(error)
