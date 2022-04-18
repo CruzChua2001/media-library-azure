@@ -1,3 +1,5 @@
+import { current } from "@reduxjs/toolkit";
+
 export async function getDisplayName(email) {
   if (email == "") {
     return
@@ -52,10 +54,12 @@ async function setLocalStorageName(email) {
       return response.json()
     })
     .then((data) => {
-        console.log(data.Items)
-        //const mail = data[i]["Mail"]
-        //const displayName = data[i]["DisplayName"]
-        //localStorage.setItem(mail, displayName)
+      console.log(data)
+      for (let i in data) {
+        const mail = data[i]["Mail"]
+        const displayName = data[i]["DisplayName"]
+        localStorage.setItem(mail, displayName)
+      }
     })
     .catch((error) => {
       console.error(error)
@@ -69,6 +73,9 @@ function updateDisplayName(data) {
     if (currentDetail != null && currentDetail != undefined) {
       const displayName = localStorage.getItem(currentDetail)
       data[i]["author"] = displayName
+    }
+    else {
+      data[i]["author"] = "URA Staff"
     }
   }
   return data

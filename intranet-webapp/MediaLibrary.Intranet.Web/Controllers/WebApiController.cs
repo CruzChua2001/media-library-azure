@@ -199,7 +199,7 @@ namespace MediaLibrary.Intranet.Web.Controllers
 
 
         [HttpGet("/api/account", Name = nameof(GetDisplayName))]
-        public async Task<IActionResult> GetDisplayName([FromBody] string emails)
+        public async Task<IActionResult> GetDisplayName([FromQuery] string emails)
         {
             List<UserInfo> userInfo = await _graphService.GetUserInfo(emails);
 
