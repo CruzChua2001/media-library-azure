@@ -107,3 +107,73 @@ a.navbar-brand {
   color: $red;
   margin-left: 0.1rem;
 }
+
+.dashboard-nav {
+    background-color: #CDD9DE;
+    border-radius: 4px;
+    width: 80%;
+    padding-top: 10%;
+    padding-bottom: 50%;
+    transition: width 2s;
+}
+
+.dashboard-nav ul li {
+    padding: 5%;
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 5%;
+}
+
+.dashboard-nav ul li.active {
+    background-color: white;
+    border-radius: 0 0 0 12px;
+}
+
+
+.dashboard-nav ul li.not-active {
+    width:50%;
+    left: 100%;
+    transition: all 1s;
+}
+
+.dashboard-nav ul li.not-active:hover {
+    width: 100%;
+    right: 0;
+    background-color: white;
+    border-radius: 0 0 0 12px;
+}
+
+.report-card {
+    padding: 3%;
+    width: 22.5%;
+    color: #504E9A;
+    border-radius: 4px;
+}
+.report-card span {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: black;
+}
+
+.upload-card {
+    background-color: #DAD3E9;
+    border-left: 3px solid #C1BAEA;
+}
+
+.file-card {
+    background-color: #E5A4B8;
+    border-left: 3px solid #F64699;
+}
+
+.download-card {
+    background-color: #D4E9A9;
+    border-left: 3px solid #F0D374;
+}
+
+.shadowHover{
+    transition: all 350ms;
+}
+
+.shadowHover:hover {
+    box-shadow: 0 1.3rem 1.8rem rgb(0 0 0 / 15%) !important;
+}

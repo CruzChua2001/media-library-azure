@@ -10,6 +10,7 @@
                 <h5 class="dropdown-item-text mb-0">@User.GetUserGraphDisplayName()</h5>
                 <p class="dropdown-item-text text-muted mb-0">@User.GetUserGraphEmail()</p>
                 <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="@Url.Action("Index", "Dashboard")">Dashboard</a>
                 <form class="form-inline" method="get" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">
                     <button type="submit" class="dropdown-item">Sign Out</button>
                 </form>
