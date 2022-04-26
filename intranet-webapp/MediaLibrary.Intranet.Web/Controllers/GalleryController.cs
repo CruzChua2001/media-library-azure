@@ -21,6 +21,9 @@ namespace MediaLibrary.Intranet.Web.Controllers
 
         public IActionResult Index()
         {
+            bool isAdmin = User.IsInRole(UserRole.Admin);
+
+            ViewData["showDashboard"] = isAdmin;
             return View();
         }
 
@@ -38,6 +41,7 @@ namespace MediaLibrary.Intranet.Web.Controllers
 
             ViewData["mediaId"] = id;
             ViewData["showAdminActions"] = isAdmin || isAuthor;
+            ViewData["showDashboard"] = isAdmin;
             return View();
         }
 
@@ -56,6 +60,7 @@ namespace MediaLibrary.Intranet.Web.Controllers
             if (isAdmin || isAuthor)
             {
                 ViewData["mediaId"] = id;
+                ViewData["showDashboard"] = isAdmin;
                 return View();
             }
             else

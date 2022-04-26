@@ -108,39 +108,147 @@ a.navbar-brand {
   margin-left: 0.1rem;
 }
 
+//Dashboard responsive widths
+//1399, 1199px, 899px, 799px
+
 .dashboard-nav {
     background-color: #CDD9DE;
     border-radius: 4px;
     width: 80%;
     padding-top: 10%;
     padding-bottom: 50%;
-    transition: width 2s;
+
+    @media only screen and (max-width: 1199px) {
+        padding-bottom: 110%;
+    }
+
+    @media only screen and (max-width: 899px) {
+        display: none;
+    }
 }
 
-.dashboard-nav ul li {
-    padding: 5%;
+.dashboard-nav-items {
+    padding-inline: 2%;
     font-size: 1.2rem;
     font-weight: bold;
     margin-bottom: 5%;
+    padding-block: 3%;
+    margin-left: 15%;
+
+    @media only screen and (max-width: 1199px) {
+        padding-block: 8%;
+        margin-left: 30%;
+    }
 }
 
-.dashboard-nav ul li.active {
+.dashboard-nav-items-responsive {
+    padding: 2%;
+}
+
+.dashboard-nav-responsive .active {
+    background-color: white;
+    border: 8px solid #CDD9DE;
+    border-top-left-radius: 24px;
+    border-bottom: hidden;
+}
+
+.dashboard-nav-responsive .not-active {
+    border-top-left-radius: 24px;
+    border: 8px solid #CDD9DE;
+    border-bottom: hidden;
+
+    &:hover {
+        background-color: white;
+        
+    }
+}
+
+.dashboard-nav-items span{
+    @media only screen and (max-width: 1199px) {
+        display: none;
+    }
+}
+
+.dashboard-nav .active {
     background-color: white;
     border-radius: 0 0 0 12px;
 }
 
-
-.dashboard-nav ul li.not-active {
-    width:50%;
-    left: 100%;
-    transition: all 1s;
+.dashboard-nav .not-active {
+    &:hover {
+        background-color: white;
+        border-radius: 0 0 0 12px;
+    }
 }
 
-.dashboard-nav ul li.not-active:hover {
-    width: 100%;
-    right: 0;
-    background-color: white;
-    border-radius: 0 0 0 12px;
+.dashboard-nav-icon {
+    width: 18px;
+    height: 18px;
+
+    @media only screen and (max-width: 1199px) {
+        width: 25px;
+        height: 25px;
+        margin-left: 10%;
+    }
+}
+
+.dashboard-nav-responsive {
+    display: none;
+    background-color: #CDD9DE;
+    border-radius: 4px;
+    padding-top: -50px;
+    
+    @media only screen and (max-width: 899px) {
+        display: flex;
+    }
+}
+
+.dashboard-container {
+    display: flex;
+    margin-top: 1.5rem;
+
+    @media only screen and (max-width: 899px) {
+        display: block;
+    }
+}
+
+.nav-left {
+    width: 25%;
+
+    @media only screen and (max-width: 1199px) {
+        width: 15%;
+    }
+
+    @media only screen and (max-width: 899px) {
+        width: 100%;
+        margin-bottom: 1.5rem;
+    }
+}
+
+.dashboard-right {
+    width: 75%;
+    padding: 1%;
+    overflow: hidden;
+    overflow-y: scroll;
+    height: 700px;
+
+    @media only screen and (max-width: 1199px) {
+        width: 85%;
+    }
+
+    @media only screen and (max-width: 899px) {
+        width: 100%;
+        height: 650px;
+    }
+}
+
+.dashboard-card {
+    display: flex;
+    margin-top: 2%;
+
+    @media only screen and (max-width: 799px) {
+        display: block;
+    }
 }
 
 .report-card {
@@ -148,6 +256,11 @@ a.navbar-brand {
     width: 22.5%;
     color: #504E9A;
     border-radius: 4px;
+
+    @media only screen and (max-width: 799px) {
+        width: 100%;
+        margin-block: 3%;
+    }
 }
 .report-card span {
     font-size: 1.4rem;
@@ -163,11 +276,38 @@ a.navbar-brand {
 .file-card {
     background-color: #E5A4B8;
     border-left: 3px solid #F64699;
+    margin-left: 1.5rem;
+
+    @media only screen and (max-width: 799px) {
+        margin-left: 0;
+    }
 }
 
 .download-card {
     background-color: #D4E9A9;
     border-left: 3px solid #F0D374;
+    margin-left: 1.5rem;
+
+    @media only screen and (max-width: 799px) {
+        margin-left: 0;
+    }
+}
+
+.reportLogo {
+    padding: 13px;
+    border-radius: 35%;
+}
+
+.uploadLogo {
+    background-color: #C1BAEA;
+}
+
+.downloadLogo {
+    background-color: #F0D374;
+}
+
+.fileLogo {
+    background-color: #F64699;
 }
 
 .shadowHover{
@@ -176,4 +316,95 @@ a.navbar-brand {
 
 .shadowHover:hover {
     box-shadow: 0 1.3rem 1.8rem rgb(0 0 0 / 15%) !important;
+}
+
+.dashboard-charts {
+    display: flex;
+    margin-top: 1.5rem;
+    
+    @media only screen and (max-width: 799px) {
+        display: block;
+    }
+}
+
+.dashboard-charts .item-left {
+    width: 64%;
+    margin-right: 2%;
+
+    @media only screen and (max-width: 799px) {
+        width: 100%;
+        margin-right: 0;
+        margin-block: 1%;
+    }
+
+    div{
+        padding-botton: 2%;
+    }
+}
+
+.dashboard-charts .item-right {
+    width: 34%;
+
+    @media only screen and (max-width: 799px) {
+        width: 100%;
+    }
+}
+
+.view-stat {
+    margin-inline: 17%;
+
+    @media (max-width: 1399px) {
+        margin-inline: 5%;
+    }
+}
+
+.dashboard-charts .pb-5-responsive {
+    padding: 1rem !important;
+
+    @media only screen and (max-width: 799px) {
+        padding: 3rem !important;
+    }
+}
+
+.dashboard-charts .p-1-responsive {
+    padding: 1rem !important;
+    padding-bottom: 3rem !important;
+
+    @media only screen and (max-width: 799px) {
+        padding: 3rem !important;
+    }
+}
+
+.genBtn {
+    float: right;
+    background-color: #CDD9DE;
+}
+
+.hrNegativeMargin {
+    margin-top: -5px;
+    margin-bottom: -5px;
+}
+
+.filterOption {
+    &:hover {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+}
+
+.filter-option-active {
+    text-decoration: underline;
+}
+
+.tableSort {
+    color: black;
+    white-space: nowrap;
+    -ms-user-select: none;
+    user-select: none;
+
+    &:hover {
+        cursor: pointer;
+        color: black;
+        text-decoration: none;
+    }
 }

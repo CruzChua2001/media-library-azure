@@ -15,6 +15,37 @@ namespace MediaLibrary.Intranet.Web.Controllers
 
             if (isAdmin)
             {
+                ViewData["showDashboard"] = isAdmin;
+                return View();
+            }
+            else
+            {
+                return Forbid();
+            }
+        }
+
+        public IActionResult ActivityReport()
+        {
+            bool isAdmin = User.IsInRole(UserRole.Admin);
+
+            if (isAdmin)
+            {
+                ViewData["showDashboard"] = isAdmin;
+                return View();
+            }
+            else
+            {
+                return Forbid();
+            }
+        }
+
+        public IActionResult FileReport()
+        {
+            bool isAdmin = User.IsInRole(UserRole.Admin);
+
+            if (isAdmin)
+            {
+                ViewData["showDashboard"] = isAdmin;
                 return View();
             }
             else

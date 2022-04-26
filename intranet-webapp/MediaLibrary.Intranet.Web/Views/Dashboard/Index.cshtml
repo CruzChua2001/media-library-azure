@@ -3,12 +3,12 @@
 @{
 }
 
-<div class="d-flex container-lg mt-4">
-    <div class="w-25">
+<div class="dashboard-container container-lg">
+    <div class="nav-left">
         <partial name="_Dashboard" />
     </div>
 
-    <div class="w-75" style="padding: 1%; overflow:hidden; overflow-y: scroll; height: 700px;">
+    <div class="dashboard-right">
         <div class="d-flex">
             <div class="w-50">
                 View By
@@ -17,54 +17,60 @@
                 </select>
             </div>
             <div class="w-50">
-                <button class="float-right btn" style="background-color: #CDD9DE">Generate Report</button>
+                <button class="genBtn btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                        <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
+                    </svg>
+                    Generate Report
+                </button>
             </div>
         </div>
 
-        <div class="d-flex mt-2">
+        <div class="dashboard-card">
             <div class="d-flex shadow upload-card report-card">
-                <div>
+                <div class="w-50">
                     Upload
                     <br />
-                    <span>200</span>
+                    <span>200 images</span>
                 </div>
-                <div class="w-100">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" style="background-color: #C1BAEA; padding: 13px; border-radius: 35%;" fill="currentColor" class="float-right bi bi-upload" viewBox="0 0 16 16">
+                <div class="w-50">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="reportLogo uploadLogo float-right bi bi-upload" viewBox="0 0 16 16">
                         <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
                         <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
                     </svg>
                 </div>
             </div>
-            <div class="d-flex shadow file-card report-card ml-4">
-                <div>
-                    Avg File Size
-                    <br />
-                    <span>10mb</span>
-                </div>
-                <div class="w-100">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" style="background-color: #F64699; padding: 13px; border-radius: 35%;" class="float-right bi bi-image" viewBox="0 0 16 16">
-                        <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
-                        <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z" />
-                    </svg>
-                </div>
-            </div>
-            <div class="d-flex shadow download-card report-card ml-4">
-                <div>
+            <div class="d-flex shadow download-card report-card">
+                <div class="w-50">
                     Download
                     <br />
-                    <span>200</span>
+                    <span>89 Images</span>
                 </div>
-                <div class="w-100">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" style="background-color: #F0D374; padding: 13px; border-radius: 35%;" class="float-right bi bi-download" viewBox="0 0 16 16">
+                <div class="w-50">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="reportLogo downloadLogo float-right bi bi-download" viewBox="0 0 16 16">
                         <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
                         <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
                     </svg>
                 </div>
             </div>
+            <div class="d-flex shadow file-card report-card">
+                <div class="w-50">
+                    Avg File Size
+                    <br />
+                    <span>10mb</span>
+                </div>
+                <div class="w-50">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="reportLogo fileLogo float-right bi bi-image" viewBox="0 0 16 16">
+                        <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+                        <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z" />
+                    </svg>
+                </div>
+            </div>
         </div>
 
-        <div class="d-flex mt-4">
-            <div class="shadowHover shadow p-3 bg-white rounded" style="width: 64%;margin-right: 2%;">
+        <div class="dashboard-charts">
+            <div class="shadowHover item-left pb-5-responsive shadow bg-white rounded">
                 <p class="text-primary">
                     Activities in
                     <select>
@@ -87,7 +93,7 @@
                 <canvas id="myChart" height="150"></canvas>
                 <hr />
                 <p class="float-right text-primary">
-                    <a>
+                    <a href="@Url.Action("ActivityReport", "Dashboard")">
                         Open Activity Report
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
                             <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
@@ -95,7 +101,7 @@
                     </a>
                 </p>
             </div>
-            <div class="shadowHover shadow p-3 bg-white rounded" style="width: 34%">
+            <div class="shadowHover item-right pb-5-responsive shadow bg-white rounded">
                 <p class="text-primary">
                     File Sizes in
                     <select>
@@ -116,16 +122,16 @@
             </div>
         </div>
 
-        <div class="d-flex mt-4">
-            <div style="width: 64%;margin-right: 2%;">
-                <div class="shadowHover shadow p-3 bg-white rounded">
+        <div class="dashboard-charts">
+            <div class="item-left">
+                <div class="shadowHover shadow pb-5-responsive bg-white rounded">
                     <p class="text-primary">
                         Upload comparison with past year
                     </p>
                     <hr />
                     <canvas id="myChart3" height="100"></canvas>
                 </div>
-                <div class="shadowHover shadow p-3 bg-white rounded mt-4">
+                <div class="shadowHover shadow pb-5-responsive bg-white rounded mt-4">
                     <p class="text-primary">
                         Download comparison with past year
                     </p>
@@ -133,35 +139,35 @@
                     <canvas id="myChart4" height="100"></canvas>
                 </div>
             </div>
-            <div style="width: 34%">
-                <div class="shadowHover shadow p-3 pb-5 bg-white rounded">
+            <div class="item-right">
+                <div class="shadowHover shadow p-1-responsive bg-white rounded">
                     <p class="text-primary">
                         View Statistics  
                     </p>
                     <hr />
 
-                    <div style="margin-inline: 17%">
+                    <div class="view-stat">
                         <p>
-                            <b>USS</b>
+                            <b class="text-overflow">USS</b>
                             <span class="float-right">128</span>
                         </p>
                         <hr />
                         <p>
-                            <b>Changi Tower</b>
+                            <b class="text-overflow">Changi Tower</b>
                             <span class="float-right">89</span>
                         </p>
                         <hr />
                         <p>
-                            <b>Orchard Road</b>
+                            <b class="text-overflow">Orchard Road</b>
                             <span class="float-right">64</span>
-                        </p>
+                        </p> 
                         <hr />
                         <p>
-                            <b>Garden By The Bay</b>
+                            <b class="text-overflow">Garden By The Bay</b>
                             <span class="float-right">48</span>
                         </p>
                         <hr />
-                        <p>
+                        <p class="text-overflow">
                             <b>Marina Bay</b>
                             <span class="float-right">29</span>
                         </p>

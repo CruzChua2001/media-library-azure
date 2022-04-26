@@ -1,7 +1,22 @@
 ﻿@using MediaLibrary.Intranet.Web.Common
+
+@{
+    bool? showDashboard = (bool?)ViewData["showDashboard"];
+    if (showDashboard == null)
+    {
+        showDashboard = false;
+    }
+}
+
 @if (User.Identity.IsAuthenticated)
 {
-    <ul class="navbar-nav ml-md-auto">
+<ul class="navbar-nav ml-md-auto">
+    @if (showDashboard == true)
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="@Url.Action("Index", "Dashboard")">Admin</a>
+        </li>
+    }
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle nav-user-dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-label="Account menu">
                 <img src="@Url.Content(User.GetUserGraphPhoto())" class="nav-profile-photo rounded-circle" alt="">
@@ -10,7 +25,6 @@
                 <h5 class="dropdown-item-text mb-0">@User.GetUserGraphDisplayName()</h5>
                 <p class="dropdown-item-text text-muted mb-0">@User.GetUserGraphEmail()</p>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="@Url.Action("Index", "Dashboard")">Dashboard</a>
                 <form class="form-inline" method="get" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">
                     <button type="submit" class="dropdown-item">Sign Out</button>
                 </form>

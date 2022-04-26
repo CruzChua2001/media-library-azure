@@ -226,3 +226,5 @@ document.getElementById("barGraph").addEventListener('click', function () {
   buildGraph1("bar")
   $("#myChart").load(location.href + " #myChart")
 })
+
+
