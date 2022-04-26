@@ -9,46 +9,84 @@ function updateActivityData(data, activityOption) {
   const table = document.getElementById("activityTableBody")
 
   //Filtering based on "All", "Upload", "Download"
-  if (activityOption == "Upload") {
-    data = data.filter(e => e.Activity === "Upload")
-  } else if (activityOption == "Download") {
-    data = data.filter(e => e.Activity === "Download")
+  switch (activityOption) {
+    case "uploadFilterOption":
+      data = data.filter(e => e.Activity === "Upload")
+      break
+    case "downloadFilterOption":
+      data = data.filter(e => e.Activity === "Download")
+      break;
+    default:
+      data = data
   }
+
+ 
 
   //Create a tr and td for each activity
   data.forEach(x => {
-    let row = table.insertRow(-1);
-    let cell1 = row.insertCell(0);
-    let cell2 = row.insertCell(1);
-    let cell3 = row.insertCell(2);
-    let cell4 = row.insertCell(3);
-    let cell5 = row.insertCell(4);
-    let cell6 = row.insertCell(5);
-    let cell7 = row.insertCell(6);
+    let row = table.insertRow(-1)
+    let cell1 = row.insertCell(0)
+    let cell2 = row.insertCell(1)
+    let cell3 = row.insertCell(2)
+    let cell4 = row.insertCell(3)
+    let cell5 = row.insertCell(4)
+    let cell6 = row.insertCell(5)
+    let cell7 = row.insertCell(6)
 
-    let img = document.createElement("img");
+    let img = document.createElement("img")
     img.src = x.Project
-    img.height = "70";
-    img.width = "70";
+    img.height = "70"
+    img.width = "70"
 
 
     cell1.appendChild(img)
-    cell2.innerHTML = x.Location;
-    cell3.innerHTML = x.Author;
-    cell4.innerHTML = x.Email;
-    cell5.innerHTML = x.Date;
-    cell6.innerHTML = x.Time;
-    cell7.innerHTML = x.Activity;
+    cell2.innerHTML = x.Location
+    cell3.innerHTML = x.Author
+    cell4.innerHTML = x.Email
+    cell5.innerHTML = x.Date
+    cell6.innerHTML = x.Time
+    cell7.innerHTML = x.Activity
   })
 }
 
 //Call updateActivity to pass data into table
-updateActivityData(activityData, "All")
+updateActivityData(activityData, "allFilterOption")
 
+
+//Variables ------------------------------------------------
+
+let nameFilter = document.getElementById("nameFilter")
+let dateFilter = document.getElementById("dateFilter")
+
+let nameASC = document.getElementById("nameASC")
+let dateASC = document.getElementById("dateASC")
+
+let nameDSC = document.getElementById("nameDSC")
+let dateDSC = document.getElementById("dateDSC")
+
+const nameHeader = document.getElementById("nameHeader")
+const dateHeader = document.getElementById("dateHeader")
 
 const allFilterOption = document.getElementById("allFilterOption")
 const uploadFilterOption = document.getElementById("uploadFilterOption")
 const downloadFilterOption = document.getElementById("downloadFilterOption")
+
+const tableBody = document.getElementById("activityTableBody")
+
+let data_to_be_sorted = [];
+activityData.forEach(e => {
+  data_to_be_sorted.push(e)
+})
+
+
+//Mini Filter Functions --------------------------------------
+
+function setOptionActive(filterOptionActive, filterOptions) {
+  filterOptionActive.classList.add("filter-option-active")
+  filterOptions.forEach(filterOption => {
+    filterOption.classList.remove("filter-option-active")
+  })
+}
 
 function resetAllIcon() {
   if (document.getElementById("nameFilter").classList.contains("d-none")) {
@@ -86,15 +124,16 @@ function resetClass() {
   }
 }
 
+
+//Filter option event listener -------------------------------------
+
 //If user select All
 allFilterOption.addEventListener('click', function () {
   //Clear Table Body
   document.getElementById("activityTableBody").innerHTML = ""
 
-  //Underline the "All" option filter 
-  uploadFilterOption.classList.remove("filter-option-active")
-  downloadFilterOption.classList.remove("filter-option-active")
-  allFilterOption.classList.add("filter-option-active")
+  //Underline the "All" option filter
+  setOptionActive(allFilterOption, [uploadFilterOption, downloadFilterOption])
 
   //Reset Icons for tables
   resetAllIcon()
@@ -102,7 +141,7 @@ allFilterOption.addEventListener('click', function () {
   //Remove Additional Classes
   resetClass()
 
-  updateActivityData(activityData, "All")
+  updateActivityData(activityData, "allFilterOption")
 })
 
 
@@ -112,9 +151,7 @@ uploadFilterOption.addEventListener('click', function () {
   document.getElementById("activityTableBody").innerHTML = ""
 
   //Underline the "Upload" option filter 
-  uploadFilterOption.classList.add("filter-option-active")
-  downloadFilterOption.classList.remove("filter-option-active")
-  allFilterOption.classList.remove("filter-option-active")
+  setOptionActive(uploadFilterOption, [allFilterOption, downloadFilterOption])
 
   //Reset Icons for tables
   resetAllIcon()
@@ -122,7 +159,7 @@ uploadFilterOption.addEventListener('click', function () {
   //Remove Additional Classes
   resetClass()
 
-  updateActivityData(activityData, "Upload")
+  updateActivityData(activityData, "uploadFilterOption")
 })
 
 
@@ -132,9 +169,7 @@ downloadFilterOption.addEventListener('click', function () {
   document.getElementById("activityTableBody").innerHTML = ""
 
   //Underline the "Download" option filter 
-  uploadFilterOption.classList.remove("filter-option-active")
-  downloadFilterOption.classList.add("filter-option-active")
-  allFilterOption.classList.remove("filter-option-active")
+  setOptionActive(downloadFilterOption, [allFilterOption, uploadFilterOption])
 
   //Reset Icons for tables
   resetAllIcon()
@@ -142,14 +177,27 @@ downloadFilterOption.addEventListener('click', function () {
   //Remove Additional Classes
   resetClass()
 
-  updateActivityData(activityData, "Download")
+  updateActivityData(activityData, "downloadFilterOption")
 })
 
 
 
-//Mini Functions -------------------------------------
+//Mini Sorting Functions -------------------------------------
 
-//Sort the array in ascending order
+//Remove other filter
+function removeSort(header) {
+  header.classList.remove("filter-dsc")
+  header.classList.remove("filter-asc")
+}
+
+//Reset Icons for other filter
+function resetIcon(filter, ASC, DSC) {
+  filter.classList.remove("d-none")
+  DSC.classList.add("d-none")
+  ASC.classList.add("d-none")
+}
+
+//All Sort
 function compareObjectsASC(object1, object2, key) {
   const obj1 = object1[key].toUpperCase()
   const obj2 = object2[key].toUpperCase()
@@ -163,7 +211,6 @@ function compareObjectsASC(object1, object2, key) {
   return 0
 }
 
-//Sort the array in descending order
 function compareObjectsDSC(object1, object2, key) {
   const obj1 = object1[key].toUpperCase()
   const obj2 = object2[key].toUpperCase()
@@ -175,37 +222,6 @@ function compareObjectsDSC(object1, object2, key) {
     return -1
   }
   return 0
-}
-
-function removeFilter(header) {
-  if (header.classList.contains("filter-dsc")) {
-    header.classList.remove("filter-dsc")
-  }
-  if (header.classList.contains("filter-asc")) {
-    header.classList.remove("filter-asc")
-  }
-}
-
-function resetIcon(filter, ASC, DSC) {
-  if (filter.classList.contains("d-none")) {
-    filter.classList.remove("d-none")
-  }
-  if (!DSC.classList.contains("d-none")) {
-    DSC.classList.add("d-none")
-  }
-  if (!ASC.classList.contains("d-none")) {
-    ASC.classList.add("d-none")
-  }
-}
-
-function checkFilterOption(current) {
-  if (current == "uploadFilterOption") {
-    return "Upload"
-  }
-  else if (current == "downloadFilterOption") {
-    return "Download"
-  }
-  return "All"
 }
 
 function convertDSCToDefault(DSC, filter, header) {
@@ -227,57 +243,32 @@ function convertDefaultToASC(filter, ASC, header) {
   header.classList.add("filter-asc")
 }
 
-let nameFilter = document.getElementById("nameFilter")
-let dateFilter = document.getElementById("dateFilter")
-let nameDSC = document.getElementById("nameDSC")
-let dateDSC = document.getElementById("dateDSC")
-let nameASC = document.getElementById("nameASC")
-let dateASC = document.getElementById("dateASC")
-
-const nameHeader = document.getElementById("nameHeader")
-const dateHeader = document.getElementById("dateHeader")
-
 
 //Sorting --------------------------
 
 //Sort by Name
 nameHeader.addEventListener('click', function () {
-  //Remove other filter
-  removeFilter(dateHeader)
-
-  //Reset Icons for other filter
-  resetIcon(dateFilter, dateASC, dateDSC)
-
-  //Check which filter option user is on
-  const currFilterOption = document.querySelector('.filter-option-active').id
-  let filterOption = checkFilterOption(currFilterOption);
-
   //Clear table body
-  document.getElementById("activityTableBody").innerHTML = ""
-
-  //Pass data into a new array
+  tableBody.innerHTML = ""
+  
   let sorted_data = [];
-  let data_to_be_sorted = [];
-  activityData.forEach(e => {
-    data_to_be_sorted.push(e)
-  })
+  removeSort(dateHeader)
+  resetIcon(dateFilter, dateASC, dateDSC)
+  let filterOption = document.querySelector('.filter-option-active').id
 
-  //If user is on descending data
-  //Convert into default data
+  //If user is on descending data --- Convert into default data
   if (nameHeader.classList.contains("filter-dsc")){
     sorted_data = activityData
     convertDSCToDefault(nameDSC, nameFilter, nameHeader)
   }
-  //If user is on ascending data
-  //Convert into descending data
+  //If user is on ascending data --- Convert into descending data
   else if (nameHeader.classList.contains("filter-asc")) {
     sorted_data = data_to_be_sorted.sort((a, b) => {
       return compareObjectsDSC(a, b, "Author")
     });
     convertASCToDSC(nameDSC, nameASC, nameHeader)
   }
-    //If user is on default data
-    //Convert into ascending data
+  //If user is on default data --- Convert into ascending data
   else {
     sorted_data = data_to_be_sorted.sort((a, b) => {
       return compareObjectsASC(a, b, "Author")
@@ -291,42 +282,28 @@ nameHeader.addEventListener('click', function () {
 
 //Sort by Date
 dateHeader.addEventListener('click', function () {
-  //Remove other filter
-  removeFilter(nameHeader)
-
-  //Reset Icons for other filter
-  resetIcon(nameFilter, nameASC, nameDSC)
-
-  //Check which filter option user is on
-  const currFilterOption = document.querySelector('.filter-option-active').id
-  let filterOption = checkFilterOption(currFilterOption);
-  
   //Clear table body
-  document.getElementById("activityTableBody").innerHTML = ""
-
+  tableBody.innerHTML = ""
   //Pass data into a new array 
   let sorted_data = [];
-  let data_to_be_sorted = [];
-  activityData.forEach(e => {
-    data_to_be_sorted.push(e)
-  })
 
-  //If user is on descending data
-  //Convert into default data
+  removeSort(nameHeader)
+  resetIcon(nameFilter, nameASC, nameDSC)
+  let filterOption = document.querySelector('.filter-option-active').id
+
+  //If user is on descending data --- Convert into default data
   if (dateHeader.classList.contains("filter-dsc")) {
     sorted_data = activityData
     convertDSCToDefault(dateDSC, dateFilter, dateHeader)
   }
-  //If user is on ascending data
-  //Convert into descending data
+  //If user is on ascending data --- Convert into descending data
   else if (dateHeader.classList.contains("filter-asc")) {
     sorted_data = data_to_be_sorted.sort((a, b) => {
       return compareObjectsDSC(a, b, "Date")
     });
     convertASCToDSC(dateDSC, dateASC, dateHeader)
   }
-  //If user is on default data
-  //Convert into ascending data
+  //If user is on default data --- Convert into ascending data
   else {
     sorted_data = data_to_be_sorted.sort((a, b) => {
       return compareObjectsASC(a, b, "Date")
