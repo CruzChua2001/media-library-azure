@@ -29,5 +29,8 @@ mix
   .copy('node_modules/leaflet/dist/images', 'wwwroot/styles/images')
   .js('assets/scripts/item.js', 'scripts')
   .js('assets/scripts/edit.js', 'scripts')
+  .js('assets/scripts/dashboard.js', 'scripts')
+  .js('assets/scripts/ActivityReport.js', 'scripts')
+  .js('assets/scripts/FileReport.js', 'scripts')
   .sass('assets/styles/site.scss', 'styles')
 mix.js('assets/scripts/gallery/main.js', 'scripts/gallery.js').react()

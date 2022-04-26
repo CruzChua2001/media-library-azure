@@ -1,7 +1,22 @@
 ﻿@using MediaLibrary.Intranet.Web.Common
+
+@{
+    bool? showDashboard = (bool?)ViewData["showDashboard"];
+    if (showDashboard == null)
+    {
+        showDashboard = false;
+    }
+}
+
 @if (User.Identity.IsAuthenticated)
 {
-    <ul class="navbar-nav ml-md-auto">
+<ul class="navbar-nav ml-md-auto">
+    @if (showDashboard == true)
+    {
+        <li class="nav-item">
+            <a class="nav-link" href="@Url.Action("Index", "Dashboard")">Admin</a>
+        </li>
+    }
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle nav-user-dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-label="Account menu">
                 <img src="@Url.Content(User.GetUserGraphPhoto())" class="nav-profile-photo rounded-circle" alt="">
