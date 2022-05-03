@@ -1,3 +1,7 @@
+import { setAdminNav } from './DisplayAdminNav'
+
+setAdminNav("dashboard")
+
 const activityData = [
   { Project: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhc8Obf2wgndcUECoWmL-sTYSGxSZeHZsXXw&usqp=CAU", Location: "Paya Lebar", Author: "Max", Email: "max.wongweikang@gmail.com", Date: "10/04/2022", Time: "11:35pm", FileSize: 16, ViewCount: 82 },
   { Project: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhc8Obf2wgndcUECoWmL-sTYSGxSZeHZsXXw&usqp=CAU", Location: "Kallang", Author: "Teo Kah Hou (URA)", Email: "teo_kah_hou@ura.gov.sg", Date: "22/04/2022", Time: "11:35pm", FileSize: 8, ViewCount: 128 },

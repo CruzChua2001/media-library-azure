@@ -1,3 +1,4 @@
+import { setAdminNav } from './DisplayAdminNav'
 import {
   Chart,
   ArcElement,
@@ -26,8 +27,6 @@ import {
   SubTitle
 } from 'chart.js';
 
-import { setAdminNav } from './DisplayAdminNav'
-
 Chart.register(
   ArcElement,
   LineElement,
@@ -55,36 +54,7 @@ Chart.register(
   SubTitle
 );
 
-setAdminNav("dashboard")
-
-const ctx2 = document.getElementById('myChart2').getContext('2d');
-const myChart2 = new Chart(ctx2, {
-  type: 'doughnut',
-  data: {
-    labels: [
-      'Red',
-      'Blue',
-      'Yellow'
-    ],
-    datasets: [{
-      label: 'My First Dataset',
-      data: [300, 50, 100],
-      backgroundColor: [
-        'rgb(255, 99, 132)',
-        'rgb(54, 162, 235)',
-        'rgb(255, 205, 86)'
-      ],
-      hoverOffset: 4
-    }]
-  },
-  options: {
-    scales: {
-      y: {
-        beginAtZero: true
-      }
-    }
-  }
-});
+setAdminNav("staff")
 
 const ctx = document.getElementById('myChart').getContext('2d');
 let myChart = new Chart(ctx, {
@@ -112,66 +82,6 @@ let myChart = new Chart(ctx, {
       ],
       borderWidth: 1
     }]
-  },
-  options: {
-    scales: {
-      y: {
-        beginAtZero: true
-      }
-    }
-  }
-});
-
-const ctx3 = document.getElementById('myChart3').getContext('2d');
-const myChart3 = new Chart(ctx3, {
-  type: 'line',
-  data: {
-    labels: [ "January", "February", "March", "April", "May", "June", "July"],
-    datasets: [{
-        label: 'My First Dataset',
-        data: [65, 59, 80, 81, 56, 55, 40],
-        fill: false,
-        borderColor: 'rgb(75, 192, 192)',
-        tension: 0.1
-    },
-      {
-        label: 'My Second Dataset',
-        data: [73, 20, 48, 38, 63, 28, 52],
-        fill: false,
-        borderColor: 'rgb(87, 199, 38)',
-        tension: 0.1
-      }
-    ]
-  },
-  options: {
-    scales: {
-      y: {
-        beginAtZero: true
-      }
-    }
-  }
-});
-
-const ctx4 = document.getElementById('myChart4').getContext('2d');
-const myChart4 = new Chart(ctx4, {
-  type: 'line',
-  data: {
-    labels: ["January", "February", "March", "April", "May", "June", "July"],
-    datasets: [{
-      label: 'My First Dataset',
-      data: [65, 59, 80, 81, 56, 55, 40],
-      fill: false,
-      borderColor: 'rgb(75, 192, 192)',
-      tension: 0.1
-    },
-      {
-        label: 'No data available',
-        data: [],
-        fill: false,
-        borderColor: 'rgb(255, 255, 255)',
-        tension: 0.1
-      }
-    ]
   },
   options: {
     scales: {
@@ -230,5 +140,3 @@ document.getElementById("barGraph").addEventListener('click', function () {
   buildGraph1("bar")
   $("#myChart").load(location.href + " #myChart")
 })
-
-

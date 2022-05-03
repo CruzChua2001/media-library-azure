@@ -53,5 +53,34 @@ namespace MediaLibrary.Intranet.Web.Controllers
                 return Forbid();
             }
         }
+        public IActionResult Staff()
+        {
+            bool isAdmin = User.IsInRole(UserRole.Admin);
+
+            if (isAdmin)
+            {
+                ViewData["showDashboard"] = isAdmin;
+                return View();
+            }
+            else
+            {
+                return Forbid();
+            }
+        }
+
+        public IActionResult StaffDashboard()
+        {
+            bool isAdmin = User.IsInRole(UserRole.Admin);
+
+            if (isAdmin)
+            {
+                ViewData["showDashboard"] = isAdmin;
+                return View();
+            }
+            else
+            {
+                return Forbid();
+            }
+        }
     }
 }

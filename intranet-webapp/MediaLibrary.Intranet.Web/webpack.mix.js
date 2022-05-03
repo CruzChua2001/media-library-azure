@@ -32,5 +32,7 @@ mix
   .js('assets/scripts/dashboard.js', 'scripts')
   .js('assets/scripts/ActivityReport.js', 'scripts')
   .js('assets/scripts/FileReport.js', 'scripts')
+  .js('assets/scripts/Staff.js', 'scripts')
+  .js('assets/scripts/StaffDashboard.js', 'scripts')
   .sass('assets/styles/site.scss', 'styles')
 mix.js('assets/scripts/gallery/main.js', 'scripts/gallery.js').react()

@@ -320,6 +320,7 @@ a.navbar-brand {
 
 .dashboard-charts {
     display: flex;
+    align-items: flex-start;
     margin-top: 1.5rem;
     
     @media only screen and (max-width: 799px) {
@@ -350,12 +351,9 @@ a.navbar-brand {
     }
 }
 
-.view-stat {
-    margin-inline: 17%;
+.view-stat, .uploaded-file-stat {
+    margin-inline: 5%;
 
-    @media (max-width: 1399px) {
-        margin-inline: 5%;
-    }
 }
 
 .dashboard-charts .pb-5-responsive {
@@ -375,9 +373,20 @@ a.navbar-brand {
     }
 }
 
+#staff-dashboard-charts .p-1-responsive {
+    padding: 1rem !important;
+
+    @media only screen and (max-width: 799px) {
+        padding: 3rem !important;
+    }
+}
+
+.genBtn, .searchBtn, .viewBtn {
+    background-color: #CDD9DE;
+}
+
 .genBtn {
     float: right;
-    background-color: #CDD9DE;
 }
 
 .hrNegativeMargin {
@@ -407,4 +416,65 @@ a.navbar-brand {
         color: black;
         text-decoration: none;
     }
+}
+
+.staffCard {
+    height: 100%;
+    position: relative;
+    padding-bottom: 20%;
+
+    @media screen and (max-width: 575px) {
+        padding-bottom: 10%;
+    }
+}
+
+.staffDashboardCard {
+    padding-bottom: 0;
+}
+
+.staffCardImage {
+    height: 100px;
+    width: 100px;
+    border-radius: 100%;
+    margin: 0 auto;
+    display: flex;
+
+    @media screen and (min-width: 576px) and (max-width: 699px) {
+        height: 70px;
+        width: 70px;
+    }
+}
+
+.staffCardName {
+    margin-top: 10%;
+    text-align: center;
+}
+
+.staffCardEmail {
+    font-size: 0.8em;
+    text-align: center;
+}
+
+.viewBtn {
+    width: 80%;
+    bottom: 10px;
+    position: absolute;
+
+    @media only screen and (max-width: 575px) {
+        width: 90%;
+    }
+}
+
+.staffDashboardTopCard {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    @media only screen and (max-width: 799px) {
+        display: inline;
+    }
+}
+
+#staff-upload-card, #staff-download-card, #staff-file-card {
+    width: 100%;
 }
