@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using MediaLibrary.Intranet.Web.Common;
 using MediaLibrary.Intranet.Web.Models;
 using MediaLibrary.Intranet.Web.Services;
@@ -12,11 +13,13 @@ namespace MediaLibrary.Intranet.Web.Controllers
     {
         private readonly ILogger<GalleryController> _logger;
         private readonly ItemService _itemService;
+        private readonly DashboardActivityService _dashboardActivityService;
 
-        public GalleryController(ILogger<GalleryController> logger, ItemService itemService)
+        public GalleryController(ILogger<GalleryController> logger, ItemService itemService, DashboardActivityService dashboardActivityService)
         {
             _logger = logger;
             _itemService = itemService;
+            _dashboardActivityService = dashboardActivityService;
         }
 
         public IActionResult Index()

@@ -26,7 +26,7 @@ function loadFileInfo() {
       img.src = data['FileURL']
       downloadBtn.href = img.src
 
-      renderMetadataSection(data)
+      renderMetadataSection(data, fileInfoId)
 
       document.title = data['Name'] + ' ' + document.title
     })
@@ -40,7 +40,13 @@ function loadFileInfo() {
     })
 }
 
-async function renderMetadataSection(data) {
+async function renderMetadataSection(data, fileId) {
+  updateActivity(data['Author'], fileId, "View")
+
+  document.getElementById("media-download").addEventListener('click', () => {
+    updateActivity(data['Author'], fileId, "Download")
+  })
+
   const template = document.querySelector('#metadata-section')
   const clone = template.content.cloneNode(true)
 
@@ -149,3 +155,26 @@ function renderTagList(tags) {
 }
 
 loadFileInfo()
+
+function updateActivity(email, fileId, activity) {
+  const baseURL = location
+  let url = new URL('/api/activity/update', baseURL)
+
+  const params = {
+    Email: email,
+    FileId: fileId,
+    Activity: activity
+  }
+
+  url.search = new URLSearchParams(params)
+
+  fetch(url, {
+    mode: 'same-origin',
+    credentials: 'same-origin',
+  })
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error(`Network response was not ok: ${response.status}`)
+    }
+  })
+}
