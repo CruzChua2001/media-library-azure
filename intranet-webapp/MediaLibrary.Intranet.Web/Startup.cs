@@ -56,6 +56,7 @@ namespace MediaLibrary.Intranet.Web
             services.AddTransient<GraphService>();
             services.AddDbContext<MediaLibraryContext>();
             services.AddTransient<DashboardActivityService>();
+            services.AddTransient<FileDetailsService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

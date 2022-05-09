@@ -14,19 +14,23 @@ namespace MediaLibrary.Intranet.Web.Controllers
         private readonly ILogger<GalleryController> _logger;
         private readonly ItemService _itemService;
         private readonly DashboardActivityService _dashboardActivityService;
+        private readonly FileDetailsService _fileDetailsService;
+        private MediaSearchService _mediaSearchService;
 
-        public GalleryController(ILogger<GalleryController> logger, ItemService itemService, DashboardActivityService dashboardActivityService)
+        public GalleryController(ILogger<GalleryController> logger, ItemService itemService, DashboardActivityService dashboardActivityService, MediaSearchService mediaSearchService, FileDetailsService fileDetailsService)
         {
             _logger = logger;
             _itemService = itemService;
             _dashboardActivityService = dashboardActivityService;
+            _mediaSearchService = mediaSearchService;
+            _fileDetailsService = fileDetailsService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            bool isAdmin = User.IsInRole(UserRole.Admin);
+            await UpdateUploadActivity();
+            await UpdateFileDetails();
 
-            ViewData["showDashboard"] = isAdmin;
             return View();
         }
 
@@ -79,6 +83,27 @@ namespace MediaLibrary.Intranet.Web.Controllers
             MediaItem item = await _itemService.GetItemAsync(id);
 
             return item?.Author;
+        }
+
+        private async Task UpdateUploadActivity()
+        {
+            var results = await _mediaSearchService.GetAllMediaItemsAsync();
+
+            foreach(var result in results)
+            {
+                _dashboardActivityService.AddActivityForUpload(result.Items);
+            }
+        }
+
+        private async Task UpdateFileDetails()
+        {
+            var results = await _mediaSearchService.GetAllMediaItemsAsync();
+
+            foreach (var result in results)
+            {
+                _dashboardActivityService.AddActivityForUpload(result.Items);
+                await _fileDetailsService.AddDetailsForUpload(result.Items);
+            }
         }
     }
 }

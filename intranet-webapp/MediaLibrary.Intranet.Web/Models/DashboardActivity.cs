@@ -11,6 +11,6 @@ namespace MediaLibrary.Intranet.Web.Models
         public string FileId { get; set; }
         public string Email { get; set; }
         public DateTime ActivityDateTime { get; set; }
-        public string Activity { get; set; }
+        public int Activity { get; set; }
     }
 }

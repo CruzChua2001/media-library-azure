@@ -20,6 +20,11 @@ namespace MediaLibrary.Intranet.Web.Services
             return _mediaLibraryContext.dashboardActivity.Any(e => e.FileId == fileId);
         }
 
+        public bool UploadActivityExist(string fileId)
+        {
+            return _mediaLibraryContext.dashboardActivity.Where(x => x.Activity == 2).Any(e => e.FileId == fileId);
+        }
+
         public DashboardActivity GetActivityByFileId(string fileId)
         {
             DashboardActivity activity = _mediaLibraryContext.dashboardActivity.Where(e => e.FileId == fileId).FirstOrDefault();
@@ -31,6 +36,25 @@ namespace MediaLibrary.Intranet.Web.Services
             _mediaLibraryContext.Add(activity);
             _mediaLibraryContext.SaveChanges();
             return true;
+        }
+
+        public void AddActivityForUpload(IList<MediaItem> mediaItem)
+        {
+            foreach (var item in mediaItem)
+            {
+                if (!UploadActivityExist(item.Id))
+                {
+                    
+                    DashboardActivity dashboardActivity = new DashboardActivity();
+                    dashboardActivity.Id = Guid.NewGuid().ToString();
+                    dashboardActivity.FileId = item.Id;
+                    dashboardActivity.Email = item.Author;
+                    dashboardActivity.ActivityDateTime = item.UploadDate;
+                    dashboardActivity.Activity = 2;
+
+                    AddActivity(dashboardActivity);
+                }
+            }
         }
     }
 }

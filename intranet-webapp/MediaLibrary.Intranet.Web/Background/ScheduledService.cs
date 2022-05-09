@@ -12,6 +12,8 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using MediaLibrary.Intranet.Web.Common;
 using MediaLibrary.Intranet.Web.Models;
+using MediaLibrary.Intranet.Web.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -35,14 +37,16 @@ namespace MediaLibrary.Intranet.Web.Background
         private readonly AppSettings _appSettings;
         private readonly ILogger<ScheduledService> _logger;
         private readonly IHttpClientFactory _clientFactory;
+        private readonly MediaLibraryContext _mediaLibraryContext;
 
-        public ScheduledService(IOptions<AppSettings> appSettings, ILogger<ScheduledService> logger, IHttpClientFactory clientFactory)
+        public ScheduledService(IOptions<AppSettings> appSettings, ILogger<ScheduledService> logger, IHttpClientFactory clientFactory, IServiceScopeFactory factory)
         {
             _schedule = CrontabSchedule.Parse(Schedule);
             _nextRun = _schedule.GetNextOccurrence(DateTime.Now);
             _appSettings = appSettings.Value;
             _logger = logger;
             _clientFactory = clientFactory;
+            _mediaLibraryContext = factory.CreateScope().ServiceProvider.GetRequiredService<MediaLibraryContext>();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -118,13 +122,13 @@ namespace MediaLibrary.Intranet.Web.Background
                 HttpContent imageContent = await GetImageByURL(item.fileURL);
                 string encodedFileName = Path.GetFileName(item.fileURL);
                 string fileName = HttpUtility.UrlDecode(encodedFileName);
-                await ImageUploadToBlob(imageBlobContainerClient, imageContent, fileName);
+                await ImageUploadToBlob(imageBlobContainerClient, imageContent, fileName, "Image", _mediaLibraryContext, item.id);
 
                 //retrieve thumbnail
                 HttpContent thumbnailContent = await GetImageByURL(item.thumbnailURL);
                 string encodedThumbnailFileName = Path.GetFileName(item.thumbnailURL);
                 string thumbnailFileName = HttpUtility.UrlDecode(encodedThumbnailFileName);
-                await ImageUploadToBlob(imageBlobContainerClient, thumbnailContent, thumbnailFileName);
+                await ImageUploadToBlob(imageBlobContainerClient, thumbnailContent, thumbnailFileName, "Thumbnail");
 
                 //create new object to serialize to json
                 var mediaItem = new MediaItem()
@@ -151,6 +155,9 @@ namespace MediaLibrary.Intranet.Web.Background
 
                 // Remove item from transfers list
                 await DeleteInternetTableItem(item);
+
+                //Update dashboard activity db
+                UpdateDashboardActivityDB(mediaItem);
 
                 _logger.LogInformation("Uploaded item {ID} into {URL}", item.id, indexFileName);
             }
@@ -219,11 +226,27 @@ namespace MediaLibrary.Intranet.Web.Background
             }
         }
 
-        private static async Task ImageUploadToBlob(BlobContainerClient blobContainerClient, HttpContent content, string fileName)
+        private static async Task ImageUploadToBlob(BlobContainerClient blobContainerClient, HttpContent content, string fileName, string fileType, MediaLibraryContext mediaLibraryContext = null, string id = null)
         {
             // Get image stream
             var stream = await content.ReadAsStreamAsync();
 
+            //Update File Details in DB
+            if (fileType == "Image")
+            {
+                double fileSize = (double)stream.Length / 1048576;
+
+                FileDetails detail = new FileDetails();
+                detail.Id = Guid.NewGuid().ToString();
+                detail.FileId = id;
+                detail.FileSize = Math.Round(fileSize, 2);
+
+                System.Diagnostics.Debug.WriteLine(detail.FileSize);
+
+                mediaLibraryContext.Add(detail);
+                mediaLibraryContext.SaveChanges();
+            }
+            
             //create a blob
             var blobClient = blobContainerClient.GetBlobClient(fileName);
             var blobUploadOptions = new BlobUploadOptions
@@ -243,6 +266,7 @@ namespace MediaLibrary.Intranet.Web.Background
             var stream = new MemoryStream();
             JsonHelper.WriteJsonToStream(mediaItem, stream);
 
+
             //create a blob
             var blobClient = blobContainerClient.GetBlobClient(fileName);
             var blobUploadOptions = new BlobUploadOptions
@@ -254,6 +278,18 @@ namespace MediaLibrary.Intranet.Web.Background
             };
 
             await blobClient.UploadAsync(stream, blobUploadOptions);
+        }
+
+        private void UpdateDashboardActivityDB(MediaItem mediaItem){
+            DashboardActivity dashboardActivity = new DashboardActivity();
+            dashboardActivity.Id = Guid.NewGuid().ToString();
+            dashboardActivity.FileId = mediaItem.Id;
+            dashboardActivity.Email = mediaItem.Author;
+            dashboardActivity.ActivityDateTime = mediaItem.UploadDate;
+            dashboardActivity.Activity = 2;
+
+            _mediaLibraryContext.Add(dashboardActivity);
+            _mediaLibraryContext.SaveChanges();
         }
     }
 }

@@ -22,5 +22,7 @@ namespace MediaLibrary.Intranet.Web.Models
         }
 
         public DbSet<DashboardActivity> dashboardActivity { get; set; }
+        public DbSet<AllActivity> allActivity { get; set; }
+        public DbSet<FileDetails> fileDetails { get; set; }
     }
 }

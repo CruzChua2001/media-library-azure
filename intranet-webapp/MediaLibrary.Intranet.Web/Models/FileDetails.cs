@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace MediaLibrary.Intranet.Web.Models
 {
-    public class ActivityCount
+    public class FileDetails
     {
-        public string Email { get; set; }
+        public string Id { get; set; }
         public string FileId { get; set; }
-        public int Activity { get; set; }
+        public Double FileSize { get; set; }
     }
 }

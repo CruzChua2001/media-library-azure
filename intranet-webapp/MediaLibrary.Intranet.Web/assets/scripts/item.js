@@ -41,10 +41,13 @@ function loadFileInfo() {
 }
 
 async function renderMetadataSection(data, fileId) {
-  updateActivity(data['Author'], fileId, "View")
+  const email = document.querySelector("#loginUserEmail").innerHTML
+  console.log(email)
+
+  updateActivity(email, fileId, 1)
 
   document.getElementById("media-download").addEventListener('click', () => {
-    updateActivity(data['Author'], fileId, "Download")
+    updateActivity(email, fileId, 3)
   })
 
   const template = document.querySelector('#metadata-section')
