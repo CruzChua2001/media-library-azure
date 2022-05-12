@@ -234,14 +234,12 @@ namespace MediaLibrary.Intranet.Web.Background
             //Update File Details in DB
             if (fileType == "Image")
             {
-                double fileSize = (double)stream.Length / 1048576;
+                decimal fileSize = (decimal)stream.Length / 1048576;
 
                 FileDetails detail = new FileDetails();
                 detail.Id = Guid.NewGuid().ToString();
                 detail.FileId = id;
                 detail.FileSize = Math.Round(fileSize, 2);
-
-                System.Diagnostics.Debug.WriteLine(detail.FileSize);
 
                 mediaLibraryContext.Add(detail);
                 mediaLibraryContext.SaveChanges();
@@ -280,7 +278,8 @@ namespace MediaLibrary.Intranet.Web.Background
             await blobClient.UploadAsync(stream, blobUploadOptions);
         }
 
-        private void UpdateDashboardActivityDB(MediaItem mediaItem){
+        private void UpdateDashboardActivityDB(MediaItem mediaItem)
+        {
             DashboardActivity dashboardActivity = new DashboardActivity();
             dashboardActivity.Id = Guid.NewGuid().ToString();
             dashboardActivity.FileId = mediaItem.Id;

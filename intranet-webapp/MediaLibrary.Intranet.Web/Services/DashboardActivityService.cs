@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediaLibrary.Intranet.Web.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace MediaLibrary.Intranet.Web.Services
 {
@@ -55,6 +56,28 @@ namespace MediaLibrary.Intranet.Web.Services
                     AddActivity(dashboardActivity);
                 }
             }
+        }
+
+        public string GetUploadCount(string planningArea)
+        {
+            string uploadCount = "0";
+            if (planningArea == "ALL")
+            {
+                uploadCount = _mediaLibraryContext.dashboardActivity.Where(e => e.Activity == 2).Count().ToString();
+            }
+
+            return uploadCount;
+        }
+
+        public string GetDownloadCount(string planningArea)
+        {
+            string downloadCount = "0";
+            if (planningArea == "ALL")
+            {
+                downloadCount = _mediaLibraryContext.dashboardActivity.Where(e => e.Activity == 3).Count().ToString();
+            }
+
+            return downloadCount;
         }
     }
 }

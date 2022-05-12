@@ -18,11 +18,14 @@ namespace MediaLibrary.Intranet.Web.Models
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             string connectionString = _config.GetConnectionString("MyConn");
-            optionsBuilder.UseSqlServer(connectionString);
+            optionsBuilder.UseSqlServer(connectionString,
+                x => x.UseNetTopologySuite());
         }
 
         public DbSet<DashboardActivity> dashboardActivity { get; set; }
         public DbSet<AllActivity> allActivity { get; set; }
         public DbSet<FileDetails> fileDetails { get; set; }
+        public DbSet<Region> region { get; set; }
+        public DbSet<PlanningArea> planningArea { get; set; }
     }
 }

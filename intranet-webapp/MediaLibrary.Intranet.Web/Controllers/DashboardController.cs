@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediaLibrary.Intranet.Web.Models;
+using MediaLibrary.Intranet.Web.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediaLibrary.Intranet.Web.Controllers

@@ -8,7 +8,10 @@ using Azure.Identity;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using MediaLibrary.Intranet.Web.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.Spatial;
+using NetTopologySuite.Geometries;
 
 namespace MediaLibrary.Intranet.Web.Services
 {
@@ -61,13 +64,11 @@ namespace MediaLibrary.Intranet.Web.Services
             {
                 string fileName = item.FileURL.Remove(0, 12);
                 BlobClient blobClient = _blobContainerClient.GetBlobClient(fileName);
-                double fileSize = 0.0;
+                decimal fileSize = 0.0M;
                 try
                 {
                     BlobDownloadInfo download = await blobClient.DownloadAsync();
-                    System.Diagnostics.Debug.WriteLine("Test");
-                    System.Diagnostics.Debug.WriteLine(download.Details.ContentLength);
-                    fileSize = (double)download.Details.ContentLength / 1048576;
+                    fileSize = (decimal)download.Details.ContentLength / 1048576;
                 }
                 catch (RequestFailedException ex) when (ex.ErrorCode == BlobErrorCode.BlobNotFound)
                 {
@@ -75,14 +76,42 @@ namespace MediaLibrary.Intranet.Web.Services
                 }
                 if (!FileExist(item.Id))
                 {
+                    Point areaPoint = null;
+                    if(item.Location != null)
+                    {
+                        areaPoint = new Point(item.Location.Longitude, item.Location.Latitude) { SRID = 4326 };
+                    }
                     FileDetails fileDetails = new FileDetails();
                     fileDetails.Id = Guid.NewGuid().ToString();
                     fileDetails.FileId = item.Id;
                     fileDetails.FileSize = fileSize;
-
+                    fileDetails.AreaPoint = areaPoint;
+                    
                     AddDetails(fileDetails);
                 }
             }
+        }
+
+        public string GetFileSizeAverage(string planningArea)
+        {
+            string result = "0";
+            if(planningArea == "ALL")
+            {
+                result = Math.Round(_mediaLibraryContext.fileDetails.Average(e => e.FileSize), 2).ToString();
+            }
+            
+            return result;
+        }
+
+
+        public IQueryable GetAllFileSizeByGroup(string planningArea, int year)
+        {
+            var result = from p in _mediaLibraryContext.Set<FileDetails>()
+                         group p by Math.Round(p.FileSize,1)
+                         into g
+                         select new { g.Key, Count = g.Count() };
+
+            return result;
         }
 
         private void File(Stream content, string contentType)

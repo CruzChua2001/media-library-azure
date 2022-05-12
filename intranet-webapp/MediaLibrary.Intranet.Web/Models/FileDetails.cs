@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Spatial;
+using NetTopologySuite.Geometries;
 
 namespace MediaLibrary.Intranet.Web.Models
 {
@@ -9,6 +11,7 @@ namespace MediaLibrary.Intranet.Web.Models
     {
         public string Id { get; set; }
         public string FileId { get; set; }
-        public Double FileSize { get; set; }
+        public decimal FileSize { get; set; }
+        public Point AreaPoint { get; set; }
     }
 }

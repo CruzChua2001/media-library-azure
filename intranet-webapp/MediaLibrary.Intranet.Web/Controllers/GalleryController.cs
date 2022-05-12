@@ -26,10 +26,10 @@ namespace MediaLibrary.Intranet.Web.Controllers
             _fileDetailsService = fileDetailsService;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            await UpdateUploadActivity();
-            await UpdateFileDetails();
+            //await UpdateUploadActivity();
+            //await UpdateFileDetails();
 
             return View();
         }

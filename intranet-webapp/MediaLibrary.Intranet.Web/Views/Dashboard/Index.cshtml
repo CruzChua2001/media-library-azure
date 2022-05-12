@@ -12,8 +12,7 @@
         <div class="d-flex">
             <div class="w-50">
                 View By
-                <select>
-                    <option>All Planning Area</option>
+                <select id="planningAreaFilter">
                 </select>
             </div>
             <div class="w-50">
@@ -32,7 +31,7 @@
                 <div class="w-50">
                     Upload
                     <br />
-                    <span>200 images</span>
+                    <span><span id="upload-card-result"></span> images</span>
                 </div>
                 <div class="w-50">
                     <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="reportLogo uploadLogo float-right bi bi-upload" viewBox="0 0 16 16">
@@ -45,7 +44,7 @@
                 <div class="w-50">
                     Download
                     <br />
-                    <span>89 Images</span>
+                    <span><span id="download-card-result"></span> Images</span>
                 </div>
                 <div class="w-50">
                     <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="reportLogo downloadLogo float-right bi bi-download" viewBox="0 0 16 16">
@@ -58,7 +57,7 @@
                 <div class="w-50">
                     Avg File Size
                     <br />
-                    <span>10mb</span>
+                    <span><span id="filesize-card-result"></span>mb</span>
                 </div>
                 <div class="w-50">
                     <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="reportLogo fileLogo float-right bi bi-image" viewBox="0 0 16 16">
@@ -90,7 +89,7 @@
                         </svg>
                     </button>
                 </div>
-                <canvas id="myChart" height="150"></canvas>
+                <canvas id="UA_Report" height="150"></canvas>
                 <hr />
                 <p class="float-right text-primary">
                     <a href="@Url.Action("ActivityReport", "Dashboard")">
@@ -109,7 +108,7 @@
                     </select>
                 </p>
                 <hr />
-                <canvas id="myChart2" height="150"></canvas>
+                <canvas id="FS_Report" height="150"></canvas>
                 <hr class="mt-3" />
                 <p class="float-right text-primary">
                     <a href="@Url.Action("FileReport", "Dashboard")">
