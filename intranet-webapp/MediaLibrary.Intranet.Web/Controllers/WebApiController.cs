@@ -28,8 +28,6 @@ namespace MediaLibrary.Intranet.Web.Controllers
         private readonly IGeoSearchHelper _geoSearchHelper;
         private readonly GraphService _graphService;
         private readonly DashboardActivityService _dashboardActivityService;
-        private readonly PlanningAreaService _planningAreaService;
-        private readonly FileDetailsService _fileDetailsService;
 
         private static BlobContainerClient _blobContainerClient = null;
 
@@ -40,9 +38,7 @@ namespace MediaLibrary.Intranet.Web.Controllers
             ItemService itemService,
             IGeoSearchHelper geoSearchHelper,
             GraphService graphService,
-            DashboardActivityService dashboardActivityService,
-            PlanningAreaService planningAreaService,
-            FileDetailsService fileDetailsService)
+            DashboardActivityService dashboardActivityService)
         {
             _appSettings = appSettings.Value;
             _logger = logger;
@@ -51,8 +47,6 @@ namespace MediaLibrary.Intranet.Web.Controllers
             _geoSearchHelper = geoSearchHelper;
             _graphService = graphService;
             _dashboardActivityService = dashboardActivityService;
-            _planningAreaService = planningAreaService;
-            _fileDetailsService = fileDetailsService;
 
             InitStorage();
         }
@@ -230,48 +224,6 @@ namespace MediaLibrary.Intranet.Web.Controllers
 
             return Ok();
         }
-
-        [HttpGet("/api/planningarea", Name = nameof(GetPlanningArea))]
-        public IActionResult GetPlanningArea()
-        {
-            var result = _planningAreaService.GetAllPlanningAreaNames();
-            return Ok(result);
-        }
-
-        [HttpGet("/api/region/{id}", Name = nameof(GetRegion))]
-        public IActionResult GetRegion(int id)
-        {
-            var result = _planningAreaService.GetRegionById(id);
-            return Ok(result);
-        }
-
-        [HttpGet("/api/activity/card/upload/{planningArea}", Name = nameof(GetCardActivtyUpload))]
-        public IActionResult GetCardActivtyUpload(string planningArea)
-        {
-            var result = _dashboardActivityService.GetUploadCount(planningArea);
-            return Ok(result);
-        }
-
-        [HttpGet("/api/activity/card/download/{planningArea}", Name = nameof(GetCardActivtyDownload))]
-        public IActionResult GetCardActivtyDownload(string planningArea)
-        {
-            var result = _dashboardActivityService.GetDownloadCount(planningArea);
-            return Ok(result);
-        }
-
-        [HttpGet("/api/activity/card/filesize/{planningArea}", Name = nameof(GetCardActivtyFileSize))]
-        public IActionResult GetCardActivtyFileSize(string planningArea)
-        {
-            var result = _fileDetailsService.GetFileSizeAverage(planningArea);
-            return Ok(result);
-        }
-
-        [HttpGet("/api/filedetails/filesize/{planningArea}/{year}", Name = nameof(GetFileSize))]
-        public IActionResult GetFileSize(string planningArea, int year)
-        {
-            var result = _fileDetailsService.GetAllFileSizeByGroup(planningArea, year);
-
-            return Ok(result);
-        }
+        
     }
 }

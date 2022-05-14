@@ -79,5 +79,39 @@ namespace MediaLibrary.Intranet.Web.Services
 
             return downloadCount;
         }
+
+        public IQueryable GetUploadCountByMonth(string planningArea, int year)
+        {
+            var result = from d in _mediaLibraryContext.Set<DashboardActivity>()
+                         where d.Activity == 2 && d.ActivityDateTime.Year == year
+                         group d by d.ActivityDateTime.Month
+                         into g
+                         select new { g.Key, Count = g.Count() };
+
+            return result;
+        }
+
+        public IQueryable GetDownloadCountByMonth(string planningArea, int year)
+        {
+            var result = from d in _mediaLibraryContext.Set<DashboardActivity>()
+                         where d.Activity == 3 && d.ActivityDateTime.Year == year
+                         group d by d.ActivityDateTime.Month
+                         into g
+                         select new { g.Key, Count = g.Count() };
+
+            return result;
+        }
+
+        public IQueryable GetViewCountTop5(string planningArea)
+        {
+            var result = (from da in _mediaLibraryContext.Set<DashboardActivity>()
+                         where da.Activity == 1
+                         group da by da.FileId
+                         into g
+                         orderby g.Count() descending
+                         select new { g.Key, Count = g.Count() }).Take(5);
+
+            return result;
+        }
     }
 }

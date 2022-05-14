@@ -72,8 +72,7 @@
             <div class="shadowHover item-left pb-5-responsive shadow bg-white rounded">
                 <p class="text-primary">
                     Activities in
-                    <select>
-                        <option>2022</option>
+                    <select id="activityYearFilter">
                     </select>
                 </p>
                 <hr />
@@ -103,8 +102,7 @@
             <div class="shadowHover item-right pb-5-responsive shadow bg-white rounded">
                 <p class="text-primary">
                     File Sizes in
-                    <select>
-                        <option>2022</option>
+                    <select id="fileSizeYearFilter">
                     </select>
                 </p>
                 <hr />
@@ -128,14 +126,14 @@
                         Upload comparison with past year
                     </p>
                     <hr />
-                    <canvas id="myChart3" height="100"></canvas>
+                    <canvas id="UP_Compare" height="100"></canvas>
                 </div>
                 <div class="shadowHover shadow pb-5-responsive bg-white rounded mt-4">
                     <p class="text-primary">
                         Download comparison with past year
                     </p>
                     <hr />
-                    <canvas id="myChart4" height="100"></canvas>
+                    <canvas id="DOWN_Compare" height="100"></canvas>
                 </div>
             </div>
             <div class="item-right">
@@ -145,31 +143,7 @@
                     </p>
                     <hr />
 
-                    <div class="view-stat">
-                        <p>
-                            <b class="text-overflow">USS</b>
-                            <span class="float-right">128</span>
-                        </p>
-                        <hr />
-                        <p>
-                            <b class="text-overflow">Changi Tower</b>
-                            <span class="float-right">89</span>
-                        </p>
-                        <hr />
-                        <p>
-                            <b class="text-overflow">Orchard Road</b>
-                            <span class="float-right">64</span>
-                        </p> 
-                        <hr />
-                        <p>
-                            <b class="text-overflow">Garden By The Bay</b>
-                            <span class="float-right">48</span>
-                        </p>
-                        <hr />
-                        <p class="text-overflow">
-                            <b>Marina Bay</b>
-                            <span class="float-right">29</span>
-                        </p>
+                    <div class="view-stat" id="viewTop">
                     </div>
 
                     <hr class="mt-3" />

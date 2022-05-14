@@ -25,8 +25,6 @@ namespace MediaLibrary.Intranet.Web.Services
         {
             var region = _mediaLibraryContext.region.Where<Region>(e=> e.Id == id).FirstOrDefault();
             return region;
-        }
-
-
+        }  
     }
 }

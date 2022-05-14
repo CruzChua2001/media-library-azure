@@ -107,6 +107,8 @@ namespace MediaLibrary.Intranet.Web.Services
         public IQueryable GetAllFileSizeByGroup(string planningArea, int year)
         {
             var result = from p in _mediaLibraryContext.Set<FileDetails>()
+                         join da in _mediaLibraryContext.Set<DashboardActivity>() on p.FileId equals da.FileId
+                         where da.ActivityDateTime.Year == year
                          group p by Math.Round(p.FileSize,1)
                          into g
                          select new { g.Key, Count = g.Count() };
