@@ -171,7 +171,7 @@ namespace MediaLibrary.Intranet.Web.Services
 
             return "geo.intersects(Location, geography'" + ret.WktPolygon + "')";
         }
-
+                                               
         public async Task DeleteItemIndexAsync(string id)
         {
             //Deletes document from indexer
@@ -179,7 +179,30 @@ namespace MediaLibrary.Intranet.Web.Services
             await _searchIndexAdminClient.Documents.IndexAsync(IndexBatch.Delete("Id", itemID));
 
             _logger.LogInformation("Deleted {id} from indexer succesfully", id);
+        }
+                                               
+        public async Task<List<MediaSearchResult>> GetAllMediaItemsAsync()
+        {
+            List<MediaSearchResult> allSearchResult = new List<MediaSearchResult>();
+            int totalSkip = 0;
+            DocumentSearchResult<MediaItem> result;
 
+            var parameters = new SearchParameters()
+            {
+                Skip = totalSkip,
+                Top = 1000
+            };
+
+            do
+            {
+                result = await _searchIndexClient.Documents.SearchAsync<MediaItem>("*", parameters);
+                MediaSearchResult mediaSearchResult = new MediaSearchResult(result);
+                allSearchResult.Add(mediaSearchResult);
+                totalSkip += mediaSearchResult.Count;
+
+            } while (result.Count > 0);
+
+            return allSearchResult;
         }
     }
 }

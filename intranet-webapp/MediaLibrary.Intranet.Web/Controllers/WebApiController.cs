@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Identity;
@@ -25,6 +27,7 @@ namespace MediaLibrary.Intranet.Web.Controllers
         private readonly ItemService _itemService;
         private readonly IGeoSearchHelper _geoSearchHelper;
         private readonly GraphService _graphService;
+        private readonly DashboardActivityService _dashboardActivityService;
 
         private static BlobContainerClient _blobContainerClient = null;
 
@@ -34,7 +37,8 @@ namespace MediaLibrary.Intranet.Web.Controllers
             MediaSearchService mediaSearchService,
             ItemService itemService,
             IGeoSearchHelper geoSearchHelper,
-            GraphService graphService)
+            GraphService graphService,
+            DashboardActivityService dashboardActivityService)
         {
             _appSettings = appSettings.Value;
             _logger = logger;
@@ -42,6 +46,7 @@ namespace MediaLibrary.Intranet.Web.Controllers
             _itemService = itemService;
             _geoSearchHelper = geoSearchHelper;
             _graphService = graphService;
+            _dashboardActivityService = dashboardActivityService;
 
             InitStorage();
         }
@@ -225,5 +230,21 @@ namespace MediaLibrary.Intranet.Web.Controllers
 
             return Ok(userInfo);
         }
+
+        [HttpGet("/api/activity/update", Name = nameof(UpdateViewCount))]
+        public IActionResult UpdateViewCount([FromQuery] ActivityCount activityCount)
+        {
+            DashboardActivity dashboardActivity = new DashboardActivity();
+            dashboardActivity.Id = Guid.NewGuid().ToString();
+            dashboardActivity.FileId = activityCount.FileId;
+            dashboardActivity.Email = activityCount.Email;
+            dashboardActivity.ActivityDateTime = DateTime.Now;
+            dashboardActivity.Activity = activityCount.Activity;
+
+            _dashboardActivityService.AddActivity(dashboardActivity);
+
+            return Ok();
+        }
+        
     }
 }

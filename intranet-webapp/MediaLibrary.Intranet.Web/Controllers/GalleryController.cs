@@ -13,15 +13,26 @@ namespace MediaLibrary.Intranet.Web.Controllers
     {
         private readonly ILogger<GalleryController> _logger;
         private readonly ItemService _itemService;
+        private readonly DashboardActivityService _dashboardActivityService;
+        private readonly FileDetailsService _fileDetailsService;
+        private MediaSearchService _mediaSearchService;
 
-        public GalleryController(ILogger<GalleryController> logger, ItemService itemService)
+        public GalleryController(ILogger<GalleryController> logger, ItemService itemService, DashboardActivityService dashboardActivityService, MediaSearchService mediaSearchService, FileDetailsService fileDetailsService)
         {
             _logger = logger;
             _itemService = itemService;
+            _dashboardActivityService = dashboardActivityService;
+            _mediaSearchService = mediaSearchService;
+            _fileDetailsService = fileDetailsService;
         }
 
         public IActionResult Index()
         {
+            bool isAdmin = User.IsInRole(UserRole.Admin);
+            ViewData["showDashboard"] = isAdmin;
+            //await UpdateUploadActivity();
+            //await UpdateFileDetails();
+
             return View();
         }
 
@@ -45,6 +56,7 @@ namespace MediaLibrary.Intranet.Web.Controllers
             ViewData["mediaId"] = id;
             ViewData["showEditActions"] = isAdmin || isAuthor;
             ViewData["showDelActions"] = isAdmin || (isAuthor && isOneDayValid);
+            ViewData["showDashboard"] = isAdmin;
             return View();
         }
 
@@ -63,6 +75,7 @@ namespace MediaLibrary.Intranet.Web.Controllers
             if (isAdmin || isAuthor)
             {
                 ViewData["mediaId"] = id;
+                ViewData["showDashboard"] = isAdmin;
                 return View();
             }
             else
@@ -87,6 +100,26 @@ namespace MediaLibrary.Intranet.Web.Controllers
             MediaItem item = await _itemService.GetItemAsync(id);
 
             return item?.UploadDate;
+        }
+        
+        private async Task UpdateUploadActivity()
+        {
+            var results = await _mediaSearchService.GetAllMediaItemsAsync();
+
+            foreach(var result in results)
+            {
+                _dashboardActivityService.AddActivityForUpload(result.Items);
+            }
+        }
+
+        private async Task UpdateFileDetails()
+        {
+            var results = await _mediaSearchService.GetAllMediaItemsAsync();
+
+            foreach (var result in results)
+            {
+                await _fileDetailsService.AddDetailsForUpload(result.Items);
+            }
         }
     }
 }
