@@ -3,7 +3,7 @@
 @{
 }
 
-<div class="dashboard-container container-lg">
+<div class="dashboard-container">
     <div class="nav-left">
         <partial name="_Dashboard" />
     </div>
@@ -12,101 +12,102 @@
             <a href="@Url.Action("Index", "Dashboard")" class="btn btn-outline-secondary btn-sm ml-2">Back</a>
         </div>
 
-        <table>
-            <tr>
-                <td class="p-2">View By</td>
-                <td>
-                    <select>
-                        <option>All Planning Area</option>
-                    </select>
-                </td>
-                <td></td>
-            </tr>
-            <tr>
-                <td align="right" class="p-2">Date</td>
-                <td>
-                    <input type="date" />
-                    to
-                    <input type="date" />
-                </td>
-                <td><span id="dateErrMsg" class="text-danger"></span></td>
-            </tr>
-        </table>
+        <h2 class="mb-4">Activity Report Statistics</h2>
 
-        <div class="mt-4 shadow bg-white rounded">
-            <div class="pt-4 pl-4 pr-4 d-flex">
-                <div class="w-50">
-                    <p class="text-primary">
-                        Activity Report
-                    </p>
+        <span id="dateErrMsg" class="text-danger"></span>
+        <div class="all-filter-sort-options mt-2 mb-2">
+            <div class="filter-sort-options">
+                <div class="dropdown">
+                    <button class="btn btn-sm border border-primary dropdown-toggle" type="button" id="planningAreaDropDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Planning Area: <span id="planningAreaSelected"></span>
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenu2" id="allPlanningArea">
+                    </div>
                 </div>
-                <div class="w-50 text-right">
+                <div class="dropdown" id="dateDropDown">
+                    <button class="btn btn-sm border border-primary dropdown-toggle" type="button" id="datePeriodDropDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Date Period: <span id="datePeriodSelected"></span>
+                    </button>
+                    <div class="p-2 pr-4 dropdown-menu" aria-labelledby="dropdownMenu2" id="dateFilter">
+                        <div class="mt-2 form-group">
+                            <div class="input-group input-group-sm">
+                                <div class="input-group-prepend">
+                                    <span class="filter-date-input input-group-text">From</span>
+                                </div>
+                                <input type="date" id="startDate" class="form-control form-control-sm" value="">
+                            </div>
+                            <div class="input-group input-group-sm">
+                                <div class="input-group-prepend">
+                                    <span class="filter-date-input input-group-text">To</span>
+                                </div>
+                                <input type="date" id="endDate" class="form-control form-control-sm" value="">
+                            </div>
+                        </div>
+                        <div id="dateDropdownDivider" class="d-none dropdown-divider"></div>
+                        <a id="resetDateBtn" class="d-none mt-2 text-right text-primary">Reset</a>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="w-100 d-flex dropdown" id="sort-filter-right">
+                <div class="mr-2 mt-1">
                     <a id="allFilterOption" class="filter-option-active filterOption">All</a>
                     <a id="uploadFilterOption" class="filterOption">Upload</a>
                     <a id="downloadFilterOption" class="filterOption">Download</a>
                 </div>
+                <button class="btn btn-sm border border-primary dropdown-toggle" type="button" id="sortingDropDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Sort By: <span id="sortDetail" class=""></span>
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="sortDropDown-item dropdown-item" id="dateDSC">Newest First</a>
+                    <a class="sortDropDown-item dropdown-item" id="dateASC">Oldest First</a>
+                </div>
+                <a id="refreshTableBtn" class="ml-2 mt-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z" />
+                        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+        <div class="shadow bg-white rounded">
+            <div class="pt-3 pb-1 pr-4 justify-content-end d-flex">
+                <nav>
+                    <ul class="paginationUL pagination">
+                        <li class="mt-2 mr-2"><span class="paginationErr text-muted"></span></li>
+                        <li class="paginationPrev page-item"><a class="paginationPrevA page-link" href="#">Previous</a></li>
+                        <li class="paginationNext page-item"><a class="paginationNextA page-link" href="#">Next</a></li>
+                    </ul>
+                </nav>
             </div>
 
             <hr class="hrNegativeMargin" />
 
             <div class="p-2">
-                <table class="table table-striped table-borderless table-responsive table-sm" id="activityTable">
+                <table class="table table-striped table-borderless table-responsive-lg table-sm" width="100%" id="activityTable">
                     <thead>
                         <tr align="center">
                             <th></th>
-                            <th>Project <br /> Location</th>
-                            <th>
-                                <a id="nameHeader" class="tableSort">
-                                    Name
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="22" width="22" fill="none" id="nameFilter" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                                    </svg>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" id="nameASC" class="d-none bi bi-sort-alpha-up" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd" d="M10.082 5.629 9.664 7H8.598l1.789-5.332h1.234L13.402 7h-1.12l-.419-1.371h-1.781zm1.57-.785L11 2.687h-.047l-.652 2.157h1.351z" />
-                                        <path d="M12.96 14H9.028v-.691l2.579-3.72v-.054H9.098v-.867h3.785v.691l-2.567 3.72v.054h2.645V14zm-8.46-.5a.5.5 0 0 1-1 0V3.707L2.354 4.854a.5.5 0 1 1-.708-.708l2-1.999.007-.007a.498.498 0 0 1 .7.006l2 2a.5.5 0 1 1-.707.708L4.5 3.707V13.5z" />
-                                    </svg>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" id="nameDSC" class="d-none bi-sort-alpha-down-alt" viewBox="0 0 16 16">
-                                        <path d="M12.96 7H9.028v-.691l2.579-3.72v-.054H9.098v-.867h3.785v.691l-2.567 3.72v.054h2.645V7z" />
-                                        <path fill-rule="evenodd" d="M10.082 12.629 9.664 14H8.598l1.789-5.332h1.234L13.402 14h-1.12l-.419-1.371h-1.781zm1.57-.785L11 9.688h-.047l-.652 2.156h1.351z" />
-                                        <path d="M4.5 2.5a.5.5 0 0 0-1 0v9.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L4.5 12.293V2.5z" />
-                                    </svg>
-                                </a>
-                            </th>
+                            <th>Planning <br /> Area</th>
+                            <th>Name</th>
                             <th>Email</th>
-                            <th>
-                                <a id="dateHeader" class="tableSort">
-                                    Date
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="22" width="22" fill="none" id="dateFilter" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                                    </svg>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" id="dateASC" class="d-none bi bi-sort-up" viewBox="0 0 16 16">
-                                        <path d="M3.5 12.5a.5.5 0 0 1-1 0V3.707L1.354 4.854a.5.5 0 1 1-.708-.708l2-1.999.007-.007a.498.498 0 0 1 .7.006l2 2a.5.5 0 1 1-.707.708L3.5 3.707V12.5zm3.5-9a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zM7.5 6a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5zm0 3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zm0 3a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1h-1z" />
-                                    </svg>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" id="dateDSC" class="d-none bi bi-sort-down-alt" viewBox="0 0 16 16">
-                                        <path d="M3.5 3.5a.5.5 0 0 0-1 0v8.793l-1.146-1.147a.5.5 0 0 0-.708.708l2 1.999.007.007a.497.497 0 0 0 .7-.006l2-2a.5.5 0 0 0-.707-.708L3.5 12.293V3.5zm4 .5a.5.5 0 0 1 0-1h1a.5.5 0 0 1 0 1h-1zm0 3a.5.5 0 0 1 0-1h3a.5.5 0 0 1 0 1h-3zm0 3a.5.5 0 0 1 0-1h5a.5.5 0 0 1 0 1h-5zM7 12.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5z" />
-                                    </svg>
-                                </a>
-                            </th>
-                            <th>Time</th>
+                            <th>Date &amp; Time</th>
                             <th>Activity</th>
                         </tr>
                     </thead>
                     <tbody id="activityTableBody" class="text-center">
-
                     </tbody>
                 </table>
             </div>
 
             <hr />
 
-            <div class="pl-3 p-1">
+            <div class="p-1 pr-4 justify-content-end d-flex">
                 <nav>
-                    <ul class="pagination">
-                        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                        <li class="active page-item"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                    <ul class="paginationUL pagination">
+                        <li class="mt-2 mr-2"><span class="paginationErr text-muted"></span></li>
+                        <li class="paginationPrev page-item"><a class="paginationPrevA page-link" href="#">Previous</a></li>
+                        <li class="paginationNext page-item"><a class="paginationNextA page-link" href="#">Next</a></li>
                     </ul>
                 </nav>
             </div>

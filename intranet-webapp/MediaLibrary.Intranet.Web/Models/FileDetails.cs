@@ -13,5 +13,6 @@ namespace MediaLibrary.Intranet.Web.Models
         public string FileId { get; set; }
         public decimal FileSize { get; set; }
         public Point AreaPoint { get; set; }
+        public string ThumbnailURL { get; set; }
     }
 }

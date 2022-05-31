@@ -1,9 +1,9 @@
 import { setAdminNav } from './DisplayAdminNav'
 import { formatDateOnly, formatTimeOnly } from './format.js'
-import { processDisplayName } from './DisplayName.js'
+import { processDisplayName, getDisplayName } from './DisplayName.js'
 import { parseISO } from 'date-fns'
 
-setAdminNav("dashboard")
+setAdminNav("Staff")
 
 //Variables ------------------------------------------------
 
@@ -32,6 +32,8 @@ const paginationPrev = document.getElementsByClassName('paginationPrev')
 const paginationNext = document.getElementsByClassName('paginationNext')
 const paginationPrevA = document.getElementsByClassName('paginationPrevA')
 const paginationNextA = document.getElementsByClassName('paginationNextA')
+let displayName = document.getElementById("displayName")
+const displayEmail = document.getElementById("displayEmail")
 
 let url;
 
@@ -70,7 +72,7 @@ function retrieveDefaultURL(activityOption, sortOption, planningArea, startDate,
     StartDate: startDate,
     EndDate: endDate,
     Page: page,
-    Email: ""
+    Email: displayEmail.innerHTML
   }
 
   url.search = new URLSearchParams(params)
@@ -96,14 +98,27 @@ function renderActivityData(data) {
       return response.json()
     })
     .then((result) => {
-      getDisplayName(result.Item1, result.Item2, result.Item3)
+      tableActivity(result.Item1, result.Item2, result.Item3)
     })
     .catch((error) => {
       console.log("Error: " + error);
     })
 }
 
-function getDisplayName(data, totalPage, currPage) {
+function displayNameFromEmail(email) {
+  if (localStorage.getItem(email)) {
+    displayName.innerHTML = localStorage.getItem(email)
+  }
+  else {
+    getDisplayName(email).then(result => {
+      if (result) {
+        displayName.innerHTML = result
+      }
+    })
+  }
+}
+
+function tableActivity(data, totalPage, currPage) {
   let paginationErr = document.getElementsByClassName('paginationErr')
   if (data.length == 0) {
     setTimeout(() => {
@@ -122,7 +137,7 @@ function getDisplayName(data, totalPage, currPage) {
     displayPagination(totalPage, currPage)
     enableClicks()
   }, 1500)
-  
+
 }
 
 async function updateDisplayName(item) {
@@ -146,38 +161,29 @@ function updateActivityData(data) {
     let cell2 = row.insertCell(1)
     let cell3 = row.insertCell(2)
     let cell4 = row.insertCell(3)
-    let cell5 = row.insertCell(4)
-    let cell6 = row.insertCell(5)
 
     let a = document.createElement("a")
     a.href = '/gallery/item/' + item.FileId
     a.target = '_blank'
     let img = document.createElement("img")
     img.src = item.ThumbnailURL
-    img.height = "80"
-    img.width = "90"
+    img.height = "100"
+    img.width = "110"
     a.appendChild(img)
 
     cell1.appendChild(a)
-    if (localStorage.getItem(item.Email)) {
-      cell3.innerHTML = localStorage.getItem(item.Email)
-    }
-    else {
-      cell3.innerHTML = ""
-    }
     cell2.innerHTML = location
-    cell4.innerHTML = item.Email
-    cell5.innerHTML = `${formatDateOnly(item.ActivityDateTime)} ${formatTimeOnly(item.ActivityDateTime)}`
-    cell5.style.whiteSpace = "nowrap"
-    cell6.innerHTML = item.ActivityType
+    cell3.innerHTML = `${formatDateOnly(item.ActivityDateTime)} ${formatTimeOnly(item.ActivityDateTime)}`
+    cell3.style.whiteSpace = "nowrap"
+    cell4.innerHTML = item.ActivityType
   })
-} 
+}
 
 function displayPagination(totalpage, currentPage) {
   $(".page-number").remove()
   displayPaginationByElement(totalpage, currentPage, paginationUL[0], paginationPrev[0], paginationNext[0], paginationPrevA[0], paginationNextA[0])
   displayPaginationByElement(totalpage, currentPage, paginationUL[1], paginationPrev[1], paginationNext[1], paginationPrevA[1], paginationNextA[1])
-  
+
 }
 
 function displayPaginationByElement(totalpage, currentPage, paginationUL, paginationPrev, paginationNext, paginationPrevA, paginationNextA) {
@@ -278,7 +284,7 @@ function displayPaginationByElement(totalpage, currentPage, paginationUL, pagina
 }
 
 
-  
+
 //Mini Functions --------------------------------------
 function displaySortFilter(sortOption) {
   if (sortOption == "dateDSC") {
@@ -401,7 +407,7 @@ function filterDate() {
   //Underline the "All" option filter
   setOptionActive(allFilterOption, [uploadFilterOption, downloadFilterOption])
 
-  url = retrieveDefaultURL("allFilterOption", sortDetail.classList.value,  planningAreaSelected.innerHTML, startDate.value, endDate.value, 1)
+  url = retrieveDefaultURL("allFilterOption", sortDetail.classList.value, planningAreaSelected.innerHTML, startDate.value, endDate.value, 1)
   renderActivityData(url)
 }
 
@@ -450,7 +456,7 @@ allFilterOption.addEventListener('click', function () {
   //Underline the "All" option filter
   setOptionActive(allFilterOption, [uploadFilterOption, downloadFilterOption])
 
-  url = retrieveDefaultURL("allFilterOption", sortDetail.classList.value,  planningAreaSelected.innerHTML, startDate.value, endDate.value, 1)
+  url = retrieveDefaultURL("allFilterOption", sortDetail.classList.value, planningAreaSelected.innerHTML, startDate.value, endDate.value, 1)
   renderActivityData(url)
 })
 
@@ -462,7 +468,7 @@ uploadFilterOption.addEventListener('click', function () {
   //Underline the "Upload" option filter 
   setOptionActive(uploadFilterOption, [allFilterOption, downloadFilterOption])
 
-  url = retrieveDefaultURL("uploadFilterOption", sortDetail.classList.value,  planningAreaSelected.innerHTML, startDate.value, endDate.value, 1)
+  url = retrieveDefaultURL("uploadFilterOption", sortDetail.classList.value, planningAreaSelected.innerHTML, startDate.value, endDate.value, 1)
   renderActivityData(url)
 })
 
@@ -474,7 +480,7 @@ downloadFilterOption.addEventListener('click', function () {
   //Underline the "Download" option filter 
   setOptionActive(downloadFilterOption, [allFilterOption, uploadFilterOption])
 
-  url = retrieveDefaultURL("downloadFilterOption", sortDetail.classList.value,  planningAreaSelected.innerHTML, startDate.value, endDate.value, 1)
+  url = retrieveDefaultURL("downloadFilterOption", sortDetail.classList.value, planningAreaSelected.innerHTML, startDate.value, endDate.value, 1)
   renderActivityData(url)
 })
 
@@ -482,7 +488,7 @@ dateDSC.addEventListener('click', function () {
   //Clear table body
   tableBody.innerHTML = ""
 
-  url = retrieveDefaultURL(document.getElementsByClassName("filter-option-active")[0].id, "dateDSC",  planningAreaSelected.innerHTML, startDate.value, endDate.value, 1)
+  url = retrieveDefaultURL(document.getElementsByClassName("filter-option-active")[0].id, "dateDSC", planningAreaSelected.innerHTML, startDate.value, endDate.value, 1)
   renderActivityData(url)
 })
 
@@ -490,7 +496,7 @@ dateASC.addEventListener('click', function () {
   //Clear table body
   tableBody.innerHTML = ""
 
-  url = retrieveDefaultURL(document.getElementsByClassName("filter-option-active")[0].id, "dateASC",  planningAreaSelected.innerHTML, startDate.value, endDate.value, 1)
+  url = retrieveDefaultURL(document.getElementsByClassName("filter-option-active")[0].id, "dateASC", planningAreaSelected.innerHTML, startDate.value, endDate.value, 1)
   renderActivityData(url)
 })
 
@@ -559,7 +565,7 @@ resetDateBtn.addEventListener('click', function () {
   resetDateBtn.classList.add("d-none")
   document.getElementById('dateDropdownDivider').classList.add('d-none')
 
-  url = retrieveDefaultURL("allFilterOption", sortDetail.classList.value,  planningAreaSelected.innerHTML, "", "", 1)
+  url = retrieveDefaultURL("allFilterOption", sortDetail.classList.value, planningAreaSelected.innerHTML, "", "", 1)
   renderActivityData(url)
 })
 
@@ -569,8 +575,8 @@ refreshTableBtn.addEventListener('click', function () {
 
   const filterOption = document.getElementsByClassName("filter-option-active")[0].id
   const page = document.getElementsByClassName("active-page-no")[0].innerHTML
-  
-  url = retrieveDefaultURL(filterOption, sortDetail.classList.value,  planningAreaSelected.innerHTML, startDate.value, endDate.value, page)
+
+  url = retrieveDefaultURL(filterOption, sortDetail.classList.value, planningAreaSelected.innerHTML, startDate.value, endDate.value, page)
   renderActivityData(url)
 })
 
@@ -589,7 +595,7 @@ $(document).on("click", '.page-link', "a", function (e) {
     page = e.target.innerHTML
   }
 
-  url = retrieveDefaultURL(document.getElementsByClassName("filter-option-active")[0].id, sortDetail.classList.value,  planningAreaSelected.innerHTML, startDate.value, endDate.value, page)
+  url = retrieveDefaultURL(document.getElementsByClassName("filter-option-active")[0].id, sortDetail.classList.value, planningAreaSelected.innerHTML, startDate.value, endDate.value, page)
   renderActivityData(url)
 })
 
@@ -599,3 +605,4 @@ url = retrieveDefaultURL(document.getElementsByClassName("filter-option-active")
 renderActivityData(url)
 
 planningAreaDropDown()
+displayNameFromEmail(displayEmail.innerHTML)

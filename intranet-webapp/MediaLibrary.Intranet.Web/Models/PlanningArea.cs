@@ -14,8 +14,9 @@ namespace MediaLibrary.Intranet.Web.Models
     {
         public int Id { get; set; }
         [JsonIgnore]
-        public Polygon AreaPolygon { get; set; }
+        public Geometry AreaPolygon { get; set; }
         public string PlanningAreaName { get; set; }
         public int RegionId { get; set; }
+        public int CA_IND { get; set; }
     }
 }

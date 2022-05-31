@@ -9,10 +9,12 @@
     </div>
     <div class="overflow-auto dashboard-right">
         <div class="p-2 mb-4 border bg-light rounded">
-            <a href="@Url.Action("Index", "Dashboard")" class="btn btn-outline-secondary btn-sm ml-2">Back</a>
+            <a href="@Url.Action("Staff", "Dashboard")" class="btn btn-outline-secondary btn-sm ml-2">Back</a>
         </div>
 
-        <h2 class="mb-4">File Report Statistics</h2>
+        <h2>Activity Report Statistics</h2>
+        <h5 id="displayName"></h5>
+        <h5 class="mb-4" id="displayEmail">@ViewData["Email"]</h5>
 
         <span id="dateErrMsg" class="text-danger"></span>
         <div class="all-filter-sort-options mt-2 mb-2">
@@ -50,18 +52,17 @@
                 </div>
             </div>
             <div class="w-100 d-flex dropdown" id="sort-filter-right">
+                <div class="mr-2 mt-1">
+                    <a id="allFilterOption" class="filter-option-active filterOption">All</a>
+                    <a id="uploadFilterOption" class="filterOption">Upload</a>
+                    <a id="downloadFilterOption" class="filterOption">Download</a>
+                </div>
                 <button class="btn btn-sm border border-primary dropdown-toggle" type="button" id="sortingDropDown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Sort By: <span id="sortDetail" class=""></span>
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="sortDropDown dropdown-item" id="dateDSC">Newest First</a>
-                    <a class="sortDropDown dropdown-item" id="dateASC">Oldest First</a>
-                    <a class="sortDropDown dropdown-item" id="fileSizeDSC">Largest File First</a>
-                    <a class="sortDropDown dropdown-item" id="fileSizeASC">Smallest File First</a>
-                    <a class="sortDropDown dropdown-item" id="viewStatsDSC">Most Viewed First</a>
-                    <a class="sortDropDown dropdown-item" id="viewStatsASC">Least Viewed First</a>
-                    <a class="sortDropDown dropdown-item" id="downloadStatsDSC">Most Download First</a>
-                    <a class="sortDropDown dropdown-item" id="downloadStatsASC">Least Download First</a>
+                    <a class="sortDropDown-item dropdown-item" id="dateDSC">Newest First</a>
+                    <a class="sortDropDown-item dropdown-item" id="dateASC">Oldest First</a>
                 </div>
                 <a id="refreshTableBtn" class="ml-2 mt-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
@@ -71,8 +72,7 @@
                 </a>
             </div>
         </div>
-
-        <div class="mt-4 shadow bg-white rounded">
+        <div class="shadow bg-white rounded">
             <div class="pt-3 pb-1 pr-4 justify-content-end d-flex">
                 <nav>
                     <ul class="paginationUL pagination">
@@ -86,20 +86,16 @@
             <hr class="hrNegativeMargin" />
 
             <div class="p-2">
-                <table class="table table-striped table-borderless table-responsive-lg table-sm" width="100%" id="fileTable">
+                <table class="table table-striped table-borderless table-responsive-lg table-sm" width="100%" id="activityTable">
                     <thead>
                         <tr align="center">
                             <th></th>
-                            <th>Planning <br /> Area</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Upload <br /> Date &amp; Time</th>
-                            <th>File <br /> Size(mb)</th>
-                            <th>View Stats</th>
-                            <th>Download Stats</th>
+                            <th>Planning Area</th>
+                            <th>Date &amp; Time</th>
+                            <th>Activity</th>
                         </tr>
                     </thead>
-                    <tbody id="fileTableBody" class="text-center">
+                    <tbody id="activityTableBody" class="text-center">
                     </tbody>
                 </table>
             </div>
@@ -119,6 +115,7 @@
     </div>
 </div>
 
-@section Scripts {
-    <script src="~/scripts/FileReport.js"></script>
-}
+
+        @section Scripts {
+            <script src="~/scripts/StaffActivityReport.js"></script>
+        }

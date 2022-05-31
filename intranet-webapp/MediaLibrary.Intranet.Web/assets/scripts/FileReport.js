@@ -1,19 +1,408 @@
 import { setAdminNav } from './DisplayAdminNav'
+import { formatDateOnly, formatTimeOnly } from './format.js'
+import { processDisplayName } from './DisplayName.js'
+import { parseISO } from 'date-fns'
 
 setAdminNav("dashboard")
 
-const activityData = [
-  { Project: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhc8Obf2wgndcUECoWmL-sTYSGxSZeHZsXXw&usqp=CAU", Location: "Paya Lebar", Author: "Max", Email: "max.wongweikang@gmail.com", Date: "10/04/2022", Time: "11:35pm", FileSize: 16, ViewCount: 82 },
-  { Project: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhc8Obf2wgndcUECoWmL-sTYSGxSZeHZsXXw&usqp=CAU", Location: "Kallang", Author: "Teo Kah Hou (URA)", Email: "teo_kah_hou@ura.gov.sg", Date: "22/04/2022", Time: "11:35pm", FileSize: 8, ViewCount: 128 },
-  { Project: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhc8Obf2wgndcUECoWmL-sTYSGxSZeHZsXXw&usqp=CAU", Location: "Yishun", Author: "Max", Email: "max.wongweikang@gmail.com", Date: "23/04/2022", Time: "11:35pm", FileSize: 13, ViewCount: 9 },
-  { Project: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhc8Obf2wgndcUECoWmL-sTYSGxSZeHZsXXw&usqp=CAU", Location: "Toa Payoh", Author: "Cruz Chua", Email: "2001cruzchua@gmail.com", Date: "24/04/2022", Time: "11:35pm", FileSize: 9, ViewCount: 134 },
-  { Project: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhc8Obf2wgndcUECoWmL-sTYSGxSZeHZsXXw&usqp=CAU", Location: "Kranji", Author: "Teo Kah Hou (URA)", Email: "teo_kah_hou@ura.gov.sg", Date: "20/04/2022", Time: "11:35pm", FileSize: 17, ViewCount: 82 }]
+//Variables ------------------------------------------------
+const tableBody = document.getElementById("fileTableBody")
+let planningAreaSelected = document.getElementById("planningAreaSelected")
+
+let sortDetail = document.getElementById("sortDetail")
+let dateASC = document.getElementById('dateASC')
+let dateDSC = document.getElementById('dateDSC')
+let fileSizeASC = document.getElementById('fileSizeASC')
+let fileSizeDSC = document.getElementById('fileSizeDSC')
+let viewStatsASC = document.getElementById('viewStatsASC')
+let viewStatsDSC = document.getElementById('viewStatsDSC')
+let downloadStatsASC = document.getElementById('downloadStatsASC')
+let downloadStatsDSC = document.getElementById('downloadStatsDSC')
+
+let refreshTableBtn = document.getElementById("refreshTableBtn")
+
+let paginationUL = document.getElementsByClassName('paginationUL')
+const paginationPrev = document.getElementsByClassName('paginationPrev')
+const paginationNext = document.getElementsByClassName('paginationNext')
+const paginationPrevA = document.getElementsByClassName('paginationPrevA')
+const paginationNextA = document.getElementsByClassName('paginationNextA')
+
+let planningAreaDD = document.getElementById("planningAreaDropDown")
+let datePeriodDD = document.getElementById("datePeriodDropDown")
+let sortingDD = document.getElementById("sortingDropDown")
+
+let url;
+
+
+//Retrieve URL -------------------------------------
+function retrieveDefaultURL(sortOption, planningArea, startDate, endDate, page) {
+  displaySortFilter(sortOption)
+  disableClicks()
+
+  planningAreaSelected.innerHTML = planningArea
+  if (startDate != "" && endDate != "") {
+    datePeriodSelected.innerHTML = `${parseAndFormatDate(startDate)} to ${parseAndFormatDate(endDate)}`
+  }
+  else {
+    datePeriodSelected.innerHTML = "Any Time"
+  }
+
+  planningAreaSelected.innerHTML = planningArea
+  const baseLocation = location
+  let url = new URL('/api/filereport', baseLocation)
+
+  const params = {
+    SortOption: sortOption,
+    PlanningArea: planningArea,
+    StartDate: startDate,
+    EndDate: endDate,
+    Page: page
+  }
+
+  url.search = new URLSearchParams(params)
+
+  return fetch(url, {
+    mode: 'same-origin',
+    credentials: 'same-origin',
+  })
+}
+
+
+//Mini Functions -------------------------------------
+
+function getRegionName(regionId) {
+  switch (parseInt(regionId)) {
+    case 1:
+      return "North Region"
+    case 2:
+      return "East Region"
+    case 3:
+      return "West Region"
+    case 4:
+      return "Central Region"
+    case 5:
+      return "North-East Region"
+    case 6:
+      return "Central Area"
+  }
+}
+
+function planningAreaDropDown() {
+  fetch('/api/planningarea', {
+    mode: 'same-origin',
+    credentials: 'same-origin',
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Network response was not ok: ${response.status}`)
+      }
+      const contentType = response.headers.get('content-type')
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new TypeError("Oops, we haven't got JSON!")
+      }
+      return response.json()
+    })
+    .then((data) => {
+      let p_area = []
+      let all_region_id = []
+      //Insert data into select
+      data.forEach(e => {
+        const planningAreaName = e["PlanningAreaName"].trim()
+
+        let regionId = e["RegionId"]
+        if (regionId == 4 && e["CA_IND"] == 1) {
+          regionId = 6
+        }
+
+        if (!all_region_id.includes(regionId)) {
+          all_region_id.push(regionId)
+        }
+
+        let area = {}
+        area[regionId] = planningAreaName
+        p_area.push(area)
+      })
+
+
+      let a = document.createElement("a")
+      a.classList.add("dropdown-item")
+      a.classList.add("planning-area-item")
+      a.classList.add("pl-2")
+      if (planningAreaSelected.innerHTML == "ALL") {
+        a.style.backgroundColor = "rgb(227, 230, 228)"
+      }
+      a.innerHTML = "ALL"
+      allPlanningArea.appendChild(a)
+      for (let i = 0; i < all_region_id.length; i++) {
+        let h6 = document.createElement("h6")
+        h6.classList.add("dropdown-header")
+        h6.classList.add("planning-area-header")
+        h6.classList.add("pl-2")
+        h6.innerHTML = getRegionName(all_region_id[i])
+        allPlanningArea.appendChild(h6)
+
+        for (let j = 0; j < p_area.length; j++) {
+          if (Object.keys(p_area[j]) == all_region_id[i]) {
+            a = document.createElement("a")
+            a.classList.add("dropdown-item")
+            a.classList.add("planning-area-item")
+            if (Object.values(p_area[j]) == planningAreaSelected.innerHTML) {
+              a.style.backgroundColor = "rgb(227, 230, 228)"
+            }
+            a.innerHTML = Object.values(p_area[j])
+            allPlanningArea.appendChild(a)
+          }
+        }
+      }
+    })
+    .catch((error) => {
+      console.log("Error: " + error);
+    })
+}
+
+function displaySortFilter(sortOption) {
+  switch (sortOption) {
+    case "dateASC":
+      renderSortFilter(dateASC, "dateASC")
+      break
+    case "dateDSC":
+      renderSortFilter(dateDSC, "dateDSC")
+      break
+    case "fileSizeASC":
+      renderSortFilter(fileSizeASC, "fileSizeASC")
+      break
+    case "fileSizeDSC":
+      renderSortFilter(fileSizeDSC, "fileSizeDSC")
+      break
+    case "viewStatsASC":
+      renderSortFilter(viewStatsASC, "viewStatsASC")
+      break
+    case "viewStatsDSC":
+      renderSortFilter(viewStatsDSC, "viewStatsDSC")
+      break
+    case "downloadStatsASC":
+      renderSortFilter(downloadStatsASC, "downloadStatsASC")
+      break
+    case "downloadStatsDSC":
+      renderSortFilter(downloadStatsDSC, "downloadStatsDSC")
+      break
+  }
+}
+
+function renderSortFilter(sort_detail, class_name) {
+  sortDetail.removeAttribute('class')
+  sortDetail.classList.add(class_name)
+  sortDetail.innerHTML = sort_detail.innerHTML
+  let sortDropDown = document.getElementsByClassName("sortDropDown")
+  for (let i = 0; i < sortDropDown.length; i++) {
+    sortDropDown[i].style.backgroundColor = "#FFFFFF"
+    if (sortDropDown[i] == sort_detail) {
+      sortDropDown[i].style.backgroundColor = "rgb(227, 230, 228)"
+    }
+  }
+}
+
+function parseAndFormatDate(date) {
+  const options = { year: 'numeric', month: 'short', day: 'numeric' }
+  return new Intl.DateTimeFormat('default', options).format(parseISO(date))
+}
+
+function filterDate() {
+  //Clear table body
+  tableBody.innerHTML = ""
+
+  url = retrieveDefaultURL(sortDetail.classList.value, planningAreaSelected.innerHTML, startDate.value, endDate.value, 1)
+  renderActivityData(url)
+}
+
+function displayPagination(totalpage, currentPage) {
+  displayPaginationByElement(totalpage, currentPage, paginationUL[0], paginationPrev[0], paginationNext[0], paginationPrevA[0], paginationNextA[0])
+  displayPaginationByElement(totalpage, currentPage, paginationUL[1], paginationPrev[1], paginationNext[1], paginationPrevA[1], paginationNextA[1])
+
+}
+
+function displayPaginationByElement(totalpage, currentPage, paginationUL, paginationPrev, paginationNext, paginationPrevA, paginationNextA) {
+  let maxPageShow = 5
+  let i = 1;
+  let pageArr = []
+  if (currentPage == 1) {
+    for (i = 1; i <= maxPageShow && i <= totalpage; i++) {
+      pageArr.push(i)
+    }
+    if (pageArr.at(-1) != totalpage) {
+      pageArr.push("...")
+      pageArr.push(totalpage)
+    }
+  }
+  else if (currentPage == totalpage) {
+    for (i = totalpage - maxPageShow + 1; pageArr.length < maxPageShow && i <= totalpage; i++) {
+      if (i <= 0) {
+        continue
+      }
+      pageArr.push(i)
+    }
+
+    if (pageArr.at(0) != 1) {
+      if (pageArr[0] != 1) {
+        pageArr.unshift(1, "...")
+      }
+    }
+  }
+  else {
+    i = currentPage - 2
+    for (let j = Math.floor(maxPageShow / 2); j > 0; j--) {
+      if (i != 0) {
+        pageArr.push(i)
+      }
+      i++
+    }
+    i = currentPage
+    for (let j = Math.floor(maxPageShow / 2); j >= 0; j--) {
+      pageArr.push(i)
+      if (i == totalpage) {
+        break
+      }
+      i++
+    }
+    if (pageArr[0] - 1 == 1) {
+      pageArr.unshift(1)
+    }
+    else if (pageArr[0] != 1) {
+      pageArr.unshift(1, "...")
+    }
+    if (pageArr.at(-1) + 1 == totalpage) {
+      pageArr.push(totalpage)
+    }
+    else if (pageArr.at(-1) != totalpage) {
+      pageArr.push("...")
+      pageArr.push(totalpage)
+    }
+  }
+  for (i = 0; i < pageArr.length; i++) {
+    let li = document.createElement("li")
+    li.classList.add("page-item")
+    let a = document.createElement("a")
+    a.classList.add("page-link")
+    a.classList.add("page-number")
+    a.innerHTML = pageArr[i]
+    if (pageArr[i] == "...") {
+      a.style.pointerEvents = 'none'
+      a.classList.add('bg-light')
+      a.classList.add('text-muted')
+    }
+    a.href = "#"
+    if (pageArr[i] == currentPage) {
+      li.classList.add("active")
+      a.classList.add("active-page-no")
+      a.style.pointerEvents = "none";
+    }
+    paginationPrev.style.pointerEvents = "auto"
+    paginationNext.style.pointerEvents = "auto"
+    paginationPrevA.classList.remove('bg-light')
+    paginationPrevA.classList.remove('text-muted')
+    paginationNextA.classList.remove('bg-light')
+    paginationNextA.classList.remove('text-muted')
+    if (currentPage == 1) {
+      paginationPrev.style.pointerEvents = "none"
+      paginationPrevA.classList.add('bg-light')
+      paginationPrevA.classList.add('text-muted')
+    }
+    if (currentPage == totalpage) {
+      paginationNext.style.pointerEvents = "none"
+      paginationNextA.classList.add('bg-light')
+      paginationNextA.classList.add('text-muted')
+    }
+
+    li.appendChild(a)
+    paginationUL.insertBefore(li, paginationNext)
+  }
+}
+
+function disableClicks() {
+  $(".page-number").remove()
+  refreshTableBtn.disabled = true
+  startDate.disabled = true
+  endDate.disabled = true
+  resetDateBtn.disabled = true
+  planningAreaDD.disabled = true
+  datePeriodDD.disabled = true
+  sortingDD.disabled = true
+  resetDateBtn.style.pointerEvents = 'none'
+}
+
+function enableClicks() {
+  refreshTableBtn.disabled = false
+  startDate.disabled = false
+  endDate.disabled = false
+  resetDateBtn.disabled = false
+  planningAreaDD.disabled = false
+  datePeriodDD.disabled = false
+  sortingDD.disabled = false
+  resetDateBtn.style.pointerEvents = 'auto'
+}
+
+
+//Render table ------------------------------------------------
+function renderActivityData(data) {
+  data
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Network response was not ok: ${response.status}`)
+      }
+      const contentType = response.headers.get('content-type')
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new TypeError("Oops, we haven't got JSON!")
+      }
+      return response.json()
+    })
+    .then((result) => {
+      getDisplayName(result.Item1, result.Item2, result.Item3)
+    })
+    .catch((error) => {
+      console.log("Error: " + error);
+    })
+}
+
+function getDisplayName(data, totalPage, currPage) {
+  let paginationErr = document.getElementsByClassName('paginationErr')
+  if (data.length == 0) {
+    setTimeout(() => {
+      paginationErr[0].innerHTML = "No result found"
+      paginationErr[1].innerHTML = "No result found"
+    }, 2000)
+  } else {
+    paginationErr[0].innerHTML = ""
+    paginationErr[1].innerHTML = ""
+  }
+
+  updateDisplayName(data)
+
+  setTimeout(() => {
+    updateActivityData(data)
+    displayPagination(totalPage, currPage)
+    enableClicks()
+  }, 1500)
+}
+
+async function updateDisplayName(item) {
+  let nameArr = []
+  item.forEach(x => {
+    let dict = { "author": x["Email"] }
+    nameArr.push(dict)
+  })
+  await processDisplayName(nameArr)
+}
 
 function updateActivityData(data) {
-  const table = document.getElementById("fileTableBody")
+  
+  data.forEach(item => {
+    const table = document.getElementById("fileTableBody")
 
-  //Create a tr and td for each activity
-  data.forEach(x => {
+    let location = "No Geotag"
+    if (item.Location.length != 0) {
+      location = item.Location[0]
+    }
+
     let row = table.insertRow(-1)
     let cell1 = row.insertCell(0)
     let cell2 = row.insertCell(1)
@@ -25,282 +414,188 @@ function updateActivityData(data) {
     let cell8 = row.insertCell(7)
 
     let img = document.createElement("img")
-    img.src = x.Project
-    img.height = "70"
-    img.width = "70"
+    img.src = item.ThumbnailURL
+    img.height = "80"
+    img.width = "90"
 
     cell1.appendChild(img)
-    cell2.innerHTML = x.Location
-    cell3.innerHTML = x.Author
-    cell4.innerHTML = x.Email
-    cell5.innerHTML = x.Date
-    cell6.innerHTML = x.Time
-    cell7.innerHTML = x.FileSize
-    cell8.innerHTML = x.ViewCount
+    if (localStorage.getItem(item.Email)) {
+      cell3.innerHTML = localStorage.getItem(item.Email)
+    }
+    else {
+      cell3.innerHTML = ""
+    }
+    cell2.innerHTML = location
+    cell4.innerHTML = item.Email
+    cell5.innerHTML = `${formatDateOnly(item.UploadDateTime)} ${formatTimeOnly(item.UploadDateTime)}`
+    cell5.style.whiteSpace = "nowrap"
+    cell6.innerHTML = item.FileSize
+    cell7.innerHTML = item.ViewCount
+    cell8.innerHTML = item.DownloadCount
   })
 }
 
-//Call updateActivity to pass data into table
-updateActivityData(activityData)
 
-
-//Variables ------------------------------------------------
-  
-let nameFilter = document.getElementById("nameFilter")
-let dateFilter = document.getElementById("dateFilter")
-let fileSizeFilter = document.getElementById("fileSizeFilter")
-let viewFilter = document.getElementById("viewFilter")
-
-let nameASC = document.getElementById("nameASC")
-let dateASC = document.getElementById("dateASC")
-let fileSizeASC = document.getElementById("fileSizeASC")
-let viewASC = document.getElementById("viewASC")
-
-let nameDSC = document.getElementById("nameDSC")
-let dateDSC = document.getElementById("dateDSC")
-let fileSizeDSC = document.getElementById("fileSizeDSC")
-let viewDSC = document.getElementById("viewDSC")
-
-const nameHeader = document.getElementById("nameHeader")
-const dateHeader = document.getElementById("dateHeader")
-const fileSizeHeader = document.getElementById("fileSizeHeader")
-const viewHeader = document.getElementById("viewHeader")
-
-const tableBody = document.getElementById("fileTableBody")
-
-let data_to_be_sorted = [];
-activityData.forEach(e => {
-  data_to_be_sorted.push(e)
-})
-
-
-//Mini Sorting Functions -------------------------------------
-
-//Remove other filter
-function removeMultipleSort(headers) {
-  headers.forEach(header => {
-    header.classList.remove("filter-dsc")
-    header.classList.remove("filter-asc")
-  })
-
-  
-}
-
-//Reset Icons for other filter
-function resetMultipleIcon(icons) {
-  icons.forEach(icon => {
-    icon.filter.classList.remove("d-none")
-    icon.DSC.classList.add("d-none")
-    icon.ASC.classList.add("d-none")
-  })
-}
-
-//All Sort
-function convertDSCToDefault(DSC, filter, header) {
-  DSC.classList.add("d-none")
-  filter.classList.remove("d-none")
-  header.classList.remove("filter-dsc")
-}
-
-function convertASCToDSC(DSC, ASC, header) {
-  DSC.classList.remove("d-none")
-  ASC.classList.add("d-none")
-  header.classList.remove("filter-asc")
-  header.classList.add("filter-dsc")
-}
-
-function convertDefaultToASC(filter, ASC, header) {
-  filter.classList.add("d-none")
-  ASC.classList.remove("d-none")
-  header.classList.add("filter-asc")
-}
-
-function compareObjectsASC(object1, object2, key) {
-  let obj1, obj2;
-  if (typeof (object1[key]) == "string") {
-    obj1 = object1[key].toUpperCase()
-    obj2 = object2[key].toUpperCase()
-  }
-  else {
-    obj1 = object1[key]
-    obj2 = object2[key]
-  }
-
-  if (obj1 < obj2) {
-    return -1
-  }
-  if (obj1 > obj2) {
-    return 1
-  }
-  return 0
-}
-
-function compareObjectsDSC(object1, object2, key) {
-  let obj1, obj2;
-  if (typeof (object1[key]) == "string") {
-    obj1 = object1[key].toUpperCase()
-    obj2 = object2[key].toUpperCase()
-  }
-  else {
-    obj1 = object1[key]
-    obj2 = object2[key]
-  }
-
-  if (obj1 < obj2) {
-    return 1
-  }
-  if (obj1 > obj2) {
-    return -1
-  }
-  return 0
-}
-
-
-//Sorting --------------------------
-
-//Sort by Name
-nameHeader.addEventListener('click', function () {
+//Event Listener --------------------------
+dateASC.addEventListener('click', function () {
   //Clear table body
   tableBody.innerHTML = ""
 
-  let sorted_data = [];
-  removeMultipleSort([dateHeader, fileSizeHeader, viewHeader])
-  resetMultipleIcon([
-    { filter: dateFilter, ASC: dateASC, DSC: dateDSC },
-    { filter: fileSizeFilter, ASC: fileSizeASC, DSC: fileSizeDSC },
-    { filter: viewFilter, ASC: viewASC, DSC: viewDSC }
-  ])
-
-  //If user is on descending data --- Convert into default data
-  if (nameHeader.classList.contains("filter-dsc")) {
-    sorted_data = activityData
-    convertDSCToDefault(nameDSC, nameFilter, nameHeader)
-  }
-  //If user is on ascending data --- Convert into descending data
-  else if (nameHeader.classList.contains("filter-asc")) {
-    sorted_data = data_to_be_sorted.sort((a, b) => {
-      return compareObjectsDSC(a, b, "Author")
-    });
-    convertASCToDSC(nameDSC, nameASC, nameHeader)
-  }
-  //If user is on default data --- Convert into ascending data
-  else {
-    sorted_data = data_to_be_sorted.sort((a, b) => {
-      return compareObjectsASC(a, b, "Author")
-    });
-    convertDefaultToASC(nameFilter, nameASC, nameHeader)
-  }
-
-  updateActivityData(sorted_data)
+  url = retrieveDefaultURL("dateASC", planningAreaSelected.innerHTML, startDate.value, endDate.value, 1)
+  renderActivityData(url)
 })
 
-
-//Sort by Date
-dateHeader.addEventListener('click', function () {
+dateDSC.addEventListener('click', function () {
   //Clear table body
   tableBody.innerHTML = ""
 
-  let sorted_data = [];
-  removeMultipleSort([nameHeader, fileSizeHeader, viewHeader])
-  resetMultipleIcon([
-    { filter: nameFilter, ASC: nameASC, DSC: nameDSC },
-    { filter: fileSizeFilter, ASC: fileSizeASC, DSC: fileSizeDSC },
-    { filter: viewFilter, ASC: viewASC, DSC: viewDSC }
-  ])
-
-  //If user is on descending data --- Convert into default data
-  if (dateHeader.classList.contains("filter-dsc")) {
-    sorted_data = activityData
-    convertDSCToDefault(dateDSC, dateFilter, dateHeader)
-  }
-  //If user is on ascending data --- Convert into descending data
-  else if (dateHeader.classList.contains("filter-asc")) {
-    sorted_data = data_to_be_sorted.sort((a, b) => {
-      return compareObjectsDSC(a, b, "Date")
-    });
-    convertASCToDSC(dateDSC, dateASC, dateHeader)
-  }
-  //If user is on default data --- Convert into ascending data
-  else {
-    sorted_data = data_to_be_sorted.sort((a, b) => {
-      return compareObjectsASC(a, b, "Date")
-    });
-    convertDefaultToASC(dateFilter, dateASC, dateHeader)
-  }
-
-  updateActivityData(sorted_data)
+  url = retrieveDefaultURL("dateDSC", planningAreaSelected.innerHTML, startDate.value, endDate.value, 1)
+  renderActivityData(url)
 })
 
-
-//Sort by File Size
-fileSizeHeader.addEventListener('click', function () {
+fileSizeDSC.addEventListener('click', function () {
   //Clear table body
   tableBody.innerHTML = ""
 
-  let sorted_data = [];
-  removeMultipleSort([dateHeader, nameHeader, viewHeader])
-  resetMultipleIcon([
-    { filter: nameFilter, ASC: nameASC, DSC: nameDSC },
-    { filter: dateFilter, ASC: dateASC, DSC: dateDSC },
-    { filter: viewFilter, ASC: viewASC, DSC: viewDSC }
-  ])
-
-  //If user is on descending data --- Convert into default data
-  if (fileSizeHeader.classList.contains("filter-dsc")) {
-    sorted_data = activityData
-    convertDSCToDefault(fileSizeDSC, fileSizeFilter, fileSizeHeader)
-  }
-  //If user is on ascending data --- Convert into descending data
-  else if (fileSizeHeader.classList.contains("filter-asc")) {
-    sorted_data = data_to_be_sorted.sort((a, b) => {
-      return compareObjectsDSC(a, b, "FileSize")
-    });
-    convertASCToDSC(fileSizeDSC, fileSizeASC, fileSizeHeader)
-  }
-  //If user is on default data --- Convert into ascending data
-  else {
-    sorted_data = data_to_be_sorted.sort((a, b) => {
-      return compareObjectsASC(a, b, "FileSize")
-    });
-    convertDefaultToASC(fileSizeFilter, fileSizeASC, fileSizeHeader)
-  }
-
-  updateActivityData(sorted_data)
+  url = retrieveDefaultURL("fileSizeDSC", planningAreaSelected.innerHTML, startDate.value, endDate.value, 1)
+  renderActivityData(url)
 })
 
-
-//Sort by View Count
-viewHeader.addEventListener('click', function () {
+fileSizeASC.addEventListener('click', function () {
   //Clear table body
   tableBody.innerHTML = ""
-  
-  let sorted_data = [];
-  removeMultipleSort([nameHeader, fileSizeHeader, dateHeader])
-  resetMultipleIcon([
-    { filter: nameFilter, ASC: nameASC, DSC: nameDSC },
-    { filter: fileSizeFilter, ASC: fileSizeASC, DSC: fileSizeDSC },
-    { filter: dateFilter, ASC: dateASC, DSC: dateDSC }
-  ])
 
-  //If user is on descending data --- Convert into default data
-  if (viewHeader.classList.contains("filter-dsc")) {
-    sorted_data = activityData
-    convertDSCToDefault(viewDSC, viewFilter, viewHeader)
-  }
-  //If user is on ascending data --- Convert into descending data
-  else if (viewHeader.classList.contains("filter-asc")) {
-    sorted_data = data_to_be_sorted.sort((a, b) => {
-      return compareObjectsDSC(a, b, "ViewCount")
-    });
-    convertASCToDSC(viewDSC, viewASC, viewHeader)
-  }
-  //If user is on default data --- Convert into ascending data
-  else {
-    sorted_data = data_to_be_sorted.sort((a, b) => {
-      return compareObjectsASC(a, b, "ViewCount")
-    });
-    convertDefaultToASC(viewFilter, viewASC, viewHeader)
-  }
-
-  updateActivityData(sorted_data)
+  url = retrieveDefaultURL("fileSizeASC", planningAreaSelected.innerHTML, startDate.value, endDate.value, 1)
+  renderActivityData(url)
 })
+
+viewStatsDSC.addEventListener('click', function () {
+  //Clear table body
+  tableBody.innerHTML = ""
+
+  url = retrieveDefaultURL("viewStatsDSC", planningAreaSelected.innerHTML, startDate.value, endDate.value, 1)
+  renderActivityData(url)
+})
+
+viewStatsASC.addEventListener('click', function () {
+  //Clear table body
+  tableBody.innerHTML = ""
+
+  url = retrieveDefaultURL("viewStatsASC", planningAreaSelected.innerHTML, startDate.value, endDate.value, 1)
+  renderActivityData(url)
+})
+
+downloadStatsDSC.addEventListener('click', function () {
+  //Clear table body
+  tableBody.innerHTML = ""
+
+  url = retrieveDefaultURL("downloadStatsDSC", planningAreaSelected.innerHTML, startDate.value, endDate.value, 1)
+  renderActivityData(url)
+})
+
+downloadStatsASC.addEventListener('click', function () {
+  //Clear table body
+  tableBody.innerHTML = ""
+
+  url = retrieveDefaultURL("downloadStatsASC", planningAreaSelected.innerHTML, startDate.value, endDate.value, 1)
+  renderActivityData(url)
+})
+
+$(document).on("click", '.planning-area-item', "a", function (e) {
+  //Clear table body
+  tableBody.innerHTML = ""
+
+  let planningAreaItem = document.getElementsByClassName('planning-area-item')
+  for (let i = 0; i < planningAreaItem.length; i++) {
+    planningAreaItem[i].style.backgroundColor = '#FFFFFF'
+  }
+
+  e.target.style.backgroundColor = "rgb(227, 230, 228)"
+
+  url = retrieveDefaultURL(sortDetail.classList.value, e.target.innerHTML, startDate.value, endDate.value, 1)
+  renderActivityData(url)
+})
+
+refreshTableBtn.addEventListener('click', function () {
+  //Clear Table Body
+  tableBody.innerHTML = ""
+
+  const page = document.getElementsByClassName("active-page-no")[0].innerHTML
+
+  url = retrieveDefaultURL(sortDetail.classList.value, planningAreaSelected.innerHTML, startDate.value, endDate.value, page)
+  renderActivityData(url)
+})
+
+startDate.addEventListener('change', function () {
+  resetDateBtn.classList.add("d-none")
+  document.getElementById('dateDropdownDivider').classList.add('d-none')
+  if (!endDate.value) {
+    dateErrMsg.innerHTML = "Please select ending date"
+  }
+  else if (startDate.value > endDate.value) {
+    dateErrMsg.innerHTML = "Please select date before ending date"
+  }
+  else {
+    dateErrMsg.innerHTML = ""
+    resetDateBtn.classList.remove("d-none")
+    document.getElementById('dateDropdownDivider').classList.remove('d-none')
+    filterDate()
+  }
+})
+
+endDate.addEventListener('change', function () {
+  resetDateBtn.classList.add("d-none")
+  document.getElementById('dateDropdownDivider').classList.add('d-none')
+  if (!startDate.value) {
+    dateErrMsg.innerHTML = "Please select starting date"
+  }
+  else if (startDate.value > endDate.value) {
+    dateErrMsg.innerHTML = "Please select date after starting date"
+  }
+  else {
+    dateErrMsg.innerHTML = ""
+    resetDateBtn.classList.remove("d-none")
+    document.getElementById('dateDropdownDivider').classList.remove('d-none')
+    filterDate()
+  }
+})
+
+resetDateBtn.addEventListener('click', function () {
+  //Clear Table Body
+  tableBody.innerHTML = ""
+
+  //Reset Date
+  startDate.value = ""
+  endDate.value = ""
+  resetDateBtn.classList.add("d-none")
+
+  url = retrieveDefaultURL(sortDetail.classList.value, planningAreaSelected.innerHTML, "", "", 1)
+  renderActivityData(url)
+})
+
+$(document).on("click", '.page-link', "a", function (e) {
+  //Clear Table Body
+  tableBody.innerHTML = ""
+  let page = document.getElementsByClassName("active-page-no")[0].innerHTML
+
+  if (e.target.innerHTML == "Next") {
+    page = parseInt(page) + 1
+  }
+  else if (e.target.innerHTML == "Previous") {
+    page = parseInt(page) - 1
+  }
+  else {
+    page = e.target.innerHTML
+  }
+
+  url = retrieveDefaultURL(sortDetail.classList.value, planningAreaSelected.innerHTML, startDate.value, endDate.value, page)
+  renderActivityData(url)
+})
+
+
+//Function Call --------------------------
+url = retrieveDefaultURL("dateDSC", "ALL", "", "", 1)
+renderActivityData(url)
+
+planningAreaDropDown()
+

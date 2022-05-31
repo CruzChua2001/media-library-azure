@@ -18,6 +18,7 @@ CREATE TABLE [dbo].[FileDetails] (
     [FileId]    VARCHAR (100)     NULL,
     [FileSize]  DECIMAL (18, 2)   NULL,
     [AreaPoint] [sys].[geography] NULL,
+    [PlanningAreaId] INT NULL, 
     PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 
@@ -26,6 +27,7 @@ CREATE TABLE [dbo].[PlanningArea] (
     [AreaPolygon]      [sys].[geography] NULL,
     [PlanningAreaName] VARCHAR (100)     NULL,
     [RegionId]         INT               NULL,
+    [CA_IND] INT NULL, 
     PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 

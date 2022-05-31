@@ -22,12 +22,21 @@ def convertRegion(region):
             return 5
 
 
-def get_new_data(id, coordinate, area, region):
+def convertCentralArea(ca_ind):
+    match ca_ind:
+        case "Y":
+            return 1
+        case "N":
+            return 0
+
+
+def get_new_data(id, coordinate, area, region, ca_ind):
     new_data = {
             'Id': id,
             'AreaPolygon': f"POLYGON(({coordinate}))",
             'PlanningAreaName': area,
-            'RegionId': convertRegion(region)
+            'RegionId': convertRegion(region),
+            'CA_IND': convertCentralArea(ca_ind)
         }
     return new_data
 
@@ -52,7 +61,7 @@ for i in featureJSON:
 
 count = 0
 for i in polygon_coordinates:
-    newData = get_new_data(count+1, i, data['features'][count]['properties']['PLN_AREA_N'], data['features'][count]["properties"]['REGION_N'])
+    newData = get_new_data(count+1, i, data['features'][count]['properties']['PLN_AREA_N'], data['features'][count]["properties"]['REGION_N'], data['features'][count]['properties']['CA_IND'])
     dashboardData.append(newData)
     count += 1
 

@@ -22,13 +22,14 @@ SELECT @JSONPlanningArea = BulkColumn
     --Place full path of sample json into empty string
 FROM OPENROWSET (BULK '', SINGLE_CLOB) IMPORT
 INSERT INTO dbo.PlanningArea
-SELECT Id, geography::STPolyFromText(AreaPolygon, 4326) as AreaPolygon, RTRIM(LTRIM(PlanningAreaName)) as PlanningAreaName, RegionId
+SELECT Id, geography::STPolyFromText(AreaPolygon, 4326) as AreaPolygon, RTRIM(LTRIM(PlanningAreaName)) as PlanningAreaName, RegionId, CA_IND
 FROM OPENJSON(@JSONPlanningArea)
 WITH (
 	[Id] int,
 	[AreaPolygon] varchar(max),
 	[PlanningAreaName] char(100),
-	[RegionId] int
+	[RegionId] int,
+    [CA_IND] int
 );
 
 Update dbo.PlanningArea

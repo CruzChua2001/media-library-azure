@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediaLibrary.Intranet.Web.Models;
 using MediaLibrary.Intranet.Web.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -39,22 +40,46 @@ namespace MediaLibrary.Intranet.Web.Controllers
         [HttpGet("/api/activity/card/upload/{planningArea}", Name = nameof(GetCardActivtyUpload))]
         public IActionResult GetCardActivtyUpload(string planningArea)
         {
-            var result = _dashboardActivityService.GetUploadCount(planningArea);
-            return Ok(result);
+            if(planningArea == "ALL")
+            {
+                var result = _dashboardActivityService.GetUploadCount();
+                return Ok(result);
+            }
+            else
+            {
+                var result = _dashboardActivityService.GetUploadCountByLocation(planningArea);
+                return Ok(result);
+            }
         }
 
         [HttpGet("/api/activity/card/download/{planningArea}", Name = nameof(GetCardActivtyDownload))]
         public IActionResult GetCardActivtyDownload(string planningArea)
         {
-            var result = _dashboardActivityService.GetDownloadCount(planningArea);
-            return Ok(result);
+            if (planningArea == "ALL")
+            {
+                var result = _dashboardActivityService.GetDownloadCount();
+                return Ok(result);
+            }
+            else
+            {
+                var result = _dashboardActivityService.GetDownloadCountByLocation(planningArea);
+                return Ok(result);
+            }
         }
 
         [HttpGet("/api/activity/card/filesize/{planningArea}", Name = nameof(GetCardActivtyFileSize))]
         public IActionResult GetCardActivtyFileSize(string planningArea)
         {
-            var result = _fileDetailsService.GetFileSizeAverage(planningArea);
-            return Ok(result);
+            if(planningArea == "ALL")
+            {
+                var result = _fileDetailsService.GetFileSizeAverage();
+                return Ok(result);
+            }
+            else
+            {
+                var result = _fileDetailsService.GetFileSizeAverageByLocation(planningArea);
+                return Ok(result);
+            }
         }
 
         [HttpGet("/api/filedetails/filesize/{planningArea}/{year}", Name = nameof(GetFileSize))]
@@ -84,6 +109,52 @@ namespace MediaLibrary.Intranet.Web.Controllers
         {
             var result = _dashboardActivityService.GetViewCountTop5(planningArea);
             return Ok(result);
+        }
+
+        [HttpGet("/api/activityreport", Name = nameof(GetActivityReport))]
+        public IActionResult GetActivityReport([FromQuery] ActivityReport report)
+        {
+            if (report.PlanningArea == "ALL")
+            {
+                var result = _dashboardActivityService.GetActivityReport(report);
+                return Ok(result);
+            }
+            else
+            {
+                var result = _dashboardActivityService.GetActivityReportByLocation(report);
+                return Ok(result);
+            }
+        }
+
+        [HttpGet("/api/filereport", Name = nameof(GetFileReport))]
+        public IActionResult GetFileReport([FromQuery] FileReport report)
+        {
+            if(report.PlanningArea == "ALL")
+            {
+                var result = _fileDetailsService.GetFileReport(report);
+                return Ok(result);
+            }
+            else
+            {
+                var result = _fileDetailsService.GetFileReportByLocation(report);
+                return Ok(result);
+            }
+        }
+
+        [HttpGet("/api/staff", Name = nameof(GetAllStaff))]
+        public IActionResult GetAllStaff([FromQuery] StaffQuery staff)
+        {
+            if(staff.SearchQuery == null)
+            {
+                var result = _dashboardActivityService.GetAllStaff(staff);
+                return Ok(result);
+            }
+            else
+            {
+                var result = _dashboardActivityService.GetAllStaffBySearch(staff);
+                return Ok(result);
+            }
+            
         }
     }
 }

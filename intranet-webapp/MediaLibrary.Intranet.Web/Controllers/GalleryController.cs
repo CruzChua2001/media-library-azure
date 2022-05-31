@@ -28,6 +28,8 @@ namespace MediaLibrary.Intranet.Web.Controllers
 
         public IActionResult Index()
         {
+            bool isAdmin = User.IsInRole(UserRole.Admin);
+            ViewData["showDashboard"] = isAdmin;
             //await UpdateUploadActivity();
             //await UpdateFileDetails();
 
@@ -101,7 +103,6 @@ namespace MediaLibrary.Intranet.Web.Controllers
 
             foreach (var result in results)
             {
-                _dashboardActivityService.AddActivityForUpload(result.Items);
                 await _fileDetailsService.AddDetailsForUpload(result.Items);
             }
         }
