@@ -532,10 +532,10 @@ namespace MediaLibrary.Internet.Web.Controllers
                 Endpoint = endpoint
             };
 
-            List<VisualFeatureTypes> features = new List<VisualFeatureTypes>()
+            IList<VisualFeatureTypes?> features = new List<VisualFeatureTypes?>()
             { VisualFeatureTypes.Tags, VisualFeatureTypes.Description};
 
-            ImageAnalysis results = await client.AnalyzeImageInStreamAsync(image, features);
+            ImageAnalysis results = await client.AnalyzeImageInStreamAsync(image, (IList<VisualFeatureTypes?>)features);
 
             return results;
         }

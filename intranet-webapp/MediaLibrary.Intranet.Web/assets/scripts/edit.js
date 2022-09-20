@@ -23,7 +23,7 @@ function loadFileInfo() {
     .then((data) => {
       img.alt = data['Name']
       img.src = data['FileURL']
-      img.parentElement.href = img.src
+      img.parentElement.href = img.src 
 
       renderMetadataSection(data)
 
